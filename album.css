@@ -1,0 +1,696 @@
+/* =========================================================
+   TRANG ALBUM — Picnic kỷ niệm
+   Ảnh do album.js dựng. Bố cục "rải ảnh" dùng left/top + thuộc tính
+   `rotate`; animation bay/xếp dùng `transform` (Web Animations) nên không đụng nhau.
+   ========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Cắt phần ảnh xoay / sticker lòi ra mép phải mà vẫn cuộn dọc bình thường */
+html,
+body {
+    overflow-x: clip;
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--cocoa);
+    overflow-x: hidden;
+    /* Khăn picnic kẻ caro hồng */
+    background:
+        radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.75), transparent 60%),
+        repeating-linear-gradient(0deg, rgba(255, 168, 194, 0.17) 0 28px, transparent 28px 56px),
+        repeating-linear-gradient(90deg, rgba(255, 168, 194, 0.17) 0 28px, transparent 28px 56px),
+        #FFF7F2;
+    background-attachment: fixed;
+}
+
+body.lb-open {
+    overflow: hidden;
+}
+
+/* ---------- Mưa đồ ăn ---------- */
+.food-rain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.food-drop {
+    position: absolute;
+    top: -60px;
+    left: var(--x);
+    font-size: var(--s);
+    opacity: 0.8;
+    filter: drop-shadow(0 4px 4px rgba(201, 76, 119, 0.2));
+    animation: foodFall var(--d) linear forwards;
+}
+
+@keyframes foodFall {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    50%  { transform: translate(var(--sway), 55vh) rotate(calc(var(--rot) * 0.5)); }
+    100% { transform: translate(0, calc(100vh + 120px)) rotate(var(--rot)); }
+}
+
+/* ---------- Tiêu đề ---------- */
+.album-header {
+    position: relative;
+    z-index: 2;
+    padding: 3.2rem 16px 0.5rem;
+    text-align: center;
+}
+
+.kicker {
+    display: inline-block;
+    margin-bottom: 0.7rem;
+    padding: 0.3rem 1.1rem;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    color: var(--lav-500);
+    background: var(--glass);
+    border: 2px solid var(--glass-border);
+    border-radius: 999px;
+}
+
+h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.h1-name {
+    display: inline-block;
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+    background: linear-gradient(135deg, var(--pink-400), var(--pink-500) 50%, #FFA06B);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 10px 18px rgba(244, 110, 151, 0.3));
+}
+
+.h1-emoji {
+    display: inline-block;
+    font-size: clamp(1.8rem, 5.5vw, 3rem);
+    animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+.subtitle {
+    max-width: 560px;
+    margin: 0.8rem auto 0;
+    font-weight: 600;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--cocoa-soft);
+}
+
+/* ---------- Băng chuyền đồ ăn ---------- */
+.conveyor {
+    position: relative;
+    width: min(920px, 100%);
+    height: 70px;
+    margin: 1.6rem auto 1.5rem;
+    overflow: hidden;
+    border: 3px solid #fff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #FFEAF1, #FFC8D8);
+    box-shadow: inset 0 -7px 0 rgba(232, 104, 146, 0.22), var(--shadow-soft);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* Vạch băng chuyền chạy */
+.conveyor::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 5px;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0 10px, transparent 10px 22px);
+    animation: beltMove 0.9s linear infinite;
+}
+
+@keyframes beltMove {
+    from { background-position: 0 0; }
+    to   { background-position: -22px 0; }
+}
+
+.conveyor__track {
+    display: flex;
+    width: max-content;
+    padding: 5px 0;
+    animation: conveyor 30s linear infinite;
+}
+
+.conveyor:hover .conveyor__track {
+    animation-play-state: paused;
+}
+
+@keyframes conveyor {
+    to { transform: translateX(-50%); }
+}
+
+.plate {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-right: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 52%, #FFE3EC 53% 62%, #fff 63%);
+    box-shadow: 0 3px 6px rgba(201, 76, 119, 0.22);
+}
+
+.plate i {
+    display: inline-block;
+    font-style: normal;
+    font-size: 1.7rem;
+}
+
+.plate:hover i {
+    animation: hop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes hop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40%      { transform: translateY(-14px) scale(1.2) rotate(-10deg); }
+    70%      { transform: translateY(0) scale(0.92, 1.08); }
+}
+
+/* ---------- Nút chọn cách xem ---------- */
+.album-tools {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 12px;
+}
+
+.tool {
+    font-size: 1rem;
+    padding: 0.7em 1.4em 0.65em;
+}
+
+.tool[aria-pressed="true"] {
+    top: 4px;
+    box-shadow:
+        0 2px 0 var(--c-edge),
+        0 6px 12px -6px var(--c-glow),
+        inset 0 3px 6px rgba(110, 74, 94, 0.18);
+}
+
+.candy--mint {
+    --c-top:    #C6F3E4;
+    --c-bottom: #72D4B6;
+    --c-edge:   #3FAF8F;
+    --c-glow:   rgba(111, 210, 180, 0.5);
+    text-shadow: 0 1px 2px rgba(40, 130, 100, 0.4);
+}
+
+.album-hint {
+    margin-top: 1rem;
+    font-family: var(--font-hand);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--cocoa-soft);
+}
+
+/* ---------- Bảng ảnh ---------- */
+.board {
+    --card-w: clamp(118px, 15vw, 196px);
+    position: relative;
+    z-index: 1;
+    width: min(1180px, calc(100% - 32px));
+    min-height: 50vh;
+    margin: 1.8rem auto 2rem;
+    transition: height 0.6s ease;
+}
+
+.board[data-mode="grid"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr));
+    justify-items: center;
+    gap: 36px 24px;
+    height: auto !important;
+}
+
+/* Tấm polaroid */
+.photo {
+    position: absolute;
+    width: var(--card-w);
+    padding: 9px 9px 0;
+    background: #fff;
+    border-radius: 10px;
+    rotate: var(--r, 0deg);
+    box-shadow: 0 12px 24px -10px rgba(110, 74, 94, 0.4), 0 2px 5px rgba(110, 74, 94, 0.1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition:
+        rotate 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease;
+}
+
+.board[data-mode="grid"] .photo {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100%;
+    max-width: 240px;
+    rotate: var(--gr, 0deg);
+}
+
+.photo:hover,
+.photo:focus-visible,
+.photo.is-dragging {
+    z-index: 800 !important;
+    rotate: 0deg;
+    scale: 1.08;
+    box-shadow: 0 26px 40px -14px rgba(201, 76, 119, 0.5), 0 4px 10px rgba(110, 74, 94, 0.15);
+}
+
+.photo:focus-visible {
+    outline: 3px dashed var(--pink-500);
+    outline-offset: 5px;
+}
+
+.photo.is-dragging {
+    scale: 1.12;
+    transition: scale 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .board[data-mode="scatter"] .photo {
+        touch-action: none;
+    }
+}
+
+/* Băng keo washi */
+.photo::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    z-index: 2;
+    width: 44%;
+    height: 22px;
+    margin-left: -22%;
+    rotate: -5deg;
+    border-radius: 3px;
+    background: repeating-linear-gradient(45deg, var(--tape) 0 7px, rgba(255, 255, 255, 0.85) 7px 14px);
+    box-shadow: 0 2px 3px rgba(110, 74, 94, 0.12);
+}
+
+.photo__img {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 6px;
+    font-size: calc(var(--card-w) * 0.16);
+    background: var(--pink-100);
+}
+
+.photo__img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
+
+/* Ảnh mẫu khi chưa có ảnh thật */
+.photo__img.is-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+    background:
+        radial-gradient(rgba(255, 255, 255, 0.55) 2px, transparent 2.5px) 0 0 / 16px 16px,
+        linear-gradient(150deg, var(--pa), var(--pb));
+}
+
+.ph-emoji {
+    font-size: 2.3em;
+    line-height: 1;
+    filter: drop-shadow(0 6px 6px rgba(110, 74, 94, 0.2));
+    animation: phBob 2.6s ease-in-out infinite;
+}
+
+.ph-text {
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 0.5em;
+    color: var(--cocoa-soft);
+}
+
+@keyframes phBob {
+    0%, 100% { transform: translateY(0) rotate(-6deg); }
+    50%      { transform: translateY(-6%) rotate(6deg); }
+}
+
+.photo__cap {
+    padding: 7px 4px 10px;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--pink-500);
+}
+
+/* Sticker đồ ăn */
+.photo__sticker {
+    position: absolute;
+    right: -12px;
+    bottom: 22px;
+    z-index: 3;
+    font-size: calc(var(--card-w) * 0.2);
+    line-height: 1;
+    rotate: 14deg;
+    filter: drop-shadow(0 3px 3px rgba(110, 74, 94, 0.25));
+    pointer-events: none;
+}
+
+.photo__sticker--left {
+    right: auto;
+    left: -12px;
+    bottom: auto;
+    top: 18%;
+    rotate: -14deg;
+}
+
+.photo:hover .photo__sticker {
+    animation: wiggle 0.6s ease-in-out;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0) scale(1); }
+    25%      { transform: rotate(-18deg) scale(1.25); }
+    60%      { transform: rotate(14deg) scale(1.1); }
+}
+
+/* ---------- 🎬 Video ---------- */
+.video-moment {
+    position: relative;
+    z-index: 1;
+    width: min(900px, calc(100% - 32px));
+    margin: 2.2rem auto 0.5rem;
+    text-align: center;
+}
+
+.video-moment h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    color: var(--pink-500);
+    text-shadow: 0 3px 0 #fff;
+}
+
+.video-sub {
+    margin-bottom: 1.2rem;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    color: var(--lav-500);
+}
+
+.video-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+}
+
+/* Khung phim có lỗ cuộn phim hai bên */
+.video-card {
+    flex: 1 1 300px;
+    max-width: 360px;
+    rotate: var(--tilt, 0deg);
+    transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.video-card:hover {
+    rotate: 0deg;
+}
+
+.video-frame {
+    position: relative;
+    padding: 14px 26px;
+    background: #3B2A40;
+    border-radius: 22px;
+    box-shadow: var(--shadow-soft), 0 0 0 4px #fff;
+}
+
+.video-frame::before,
+.video-frame::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    width: 10px;
+    background: repeating-linear-gradient(180deg, #FFE4EC 0 8px, transparent 8px 18px);
+    border-radius: 3px;
+    opacity: 0.85;
+}
+
+.video-frame::before { left: 8px; }
+.video-frame::after  { right: 8px; }
+
+.video-frame video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #1E1622;
+}
+
+.video-card figcaption {
+    margin-top: 10px;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--pink-500);
+}
+
+/* Khung hướng dẫn (chỉ hiện ở chế độ xem trước khi chưa có video) */
+.video-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: min(560px, 100%);
+    padding: 28px 22px;
+    color: var(--cocoa-soft);
+    background: rgba(255, 255, 255, 0.7);
+    border: 3px dashed var(--pink-300);
+    border-radius: 26px;
+}
+
+.video-empty__icon {
+    font-size: 2.6rem;
+}
+
+.video-empty b {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--pink-500);
+}
+
+.video-empty code {
+    padding: 1px 6px;
+    font-size: 0.85em;
+    background: var(--pink-100);
+    border-radius: 6px;
+}
+
+.video-empty small {
+    font-family: var(--font-hand);
+    color: var(--lav-500);
+}
+
+/* ---------- Cuối trang ---------- */
+.album-footer {
+    position: relative;
+    z-index: 1;
+    padding: 1rem 16px 120px;
+    text-align: center;
+}
+
+.album-next {
+    animation: floaty 3s ease-in-out infinite;
+}
+
+.album-next:hover {
+    animation: floaty 3s ease-in-out infinite, jelly 0.75s ease both;
+}
+
+@keyframes floaty {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -8px; }
+}
+
+/* ---------- Xem ảnh to ---------- */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 20px;
+    background: rgba(110, 74, 94, 0.55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    animation: lbFade 0.3s ease;
+}
+
+.lightbox[hidden] {
+    display: none;
+}
+
+@keyframes lbFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.lb-card {
+    position: relative;
+    justify-self: center;
+    width: min(540px, 100%, calc((100vh - 200px) * 0.8));
+    padding: 14px 14px 0;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px -20px rgba(42, 34, 80, 0.6);
+    animation: lbPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes lbPop {
+    from { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.lb-photo {
+    font-size: 34px;
+    border-radius: 10px;
+    touch-action: pan-y;
+}
+
+.lb-photo img {
+    object-fit: cover;
+}
+
+.lb-photo.slide-r { animation: slideR 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.lb-photo.slide-l { animation: slideL 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@keyframes slideR {
+    from { transform: translateX(40px) rotate(3deg); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+
+@keyframes slideL {
+    from { transform: translateX(-40px) rotate(-3deg); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+
+.lb-caption {
+    padding: 12px 8px 16px;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-align: center;
+    color: var(--pink-500);
+}
+
+.lb-count {
+    position: absolute;
+    top: -16px;
+    right: 16px;
+    padding: 4px 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
+    background: var(--pink-400);
+    border: 2px solid #fff;
+    border-radius: 999px;
+}
+
+.lb-arrow,
+.lb-close {
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+}
+
+.lb-arrow {
+    width: 56px;
+    height: 56px;
+    padding-bottom: 4px;
+    font-size: 2.2rem;
+    color: #fff;
+    background: linear-gradient(180deg, #FFB3C9, #FF86AA);
+    box-shadow: 0 5px 0 #E86892, 0 12px 20px -8px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.lb-arrow:hover {
+    animation: jelly 0.75s ease both;
+}
+
+.lb-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    color: var(--pink-500);
+    background: #fff;
+    box-shadow: 0 6px 14px -4px rgba(42, 34, 80, 0.4);
+}
+
+.lb-close:hover {
+    animation: jelly 0.75s ease both;
+}
+
+.lb-arrow:focus-visible,
+.lb-close:focus-visible {
+    outline: 3px dashed #fff;
+    outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+    .album-header { padding-top: 2.4rem; }
+    .conveyor { height: 60px; }
+    .plate { width: 44px; height: 44px; margin-right: 14px; }
+    .plate i { font-size: 1.4rem; }
+
+    .lightbox {
+        grid-template-columns: 1fr;
+        padding: 70px 16px 100px;
+    }
+    .lb-card { width: min(100%, calc((100vh - 260px) * 0.8)); }
+    .lb-arrow {
+        position: absolute;
+        bottom: 26px;
+        width: 50px;
+        height: 50px;
+    }
+    .lb-prev { left: calc(50% - 70px); }
+    .lb-next { right: calc(50% - 70px); }
+}

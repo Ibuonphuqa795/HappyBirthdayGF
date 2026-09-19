@@ -1,24 +1,24 @@
  // Reasons database
  const reasons = [
     { 
-        text: "Cảm ơn em vì đã xuất hiện và làm cho thế giới của anh trở nên ấm áp và rực rỡ hơn bao giờ hết. 💖", 
+        text: "Tuổi mới chúc em thật khoẻ mạnh, tối nào cũng ngủ ngon, sáng nào dậy cũng tràn đầy sức sống nha. 💖", 
         emoji: "🌟",
-        gif: "gif1.gif"
+        gif: "gif1.webp"
     },
     { 
-        text: "Chúc Quỳnh Bếuu tuổi mới luôn xinh đẹp rạng ngời, lúc nào cũng cười thật tươi và bớt dỗi anh lại nha! 🌸", 
+        text: "Chúc Quỳnh Bếuu ngày càng xinh, ngày càng đáng yêu, và bớt dỗi anh lại xíu nha! 🌸", 
         emoji: "💗",
-        gif: "gif2.gif"
+        gif: "gif2.webp"
     },
     { 
-        text: "Mong rằng mọi ước mơ và dự định của em đều thành hiện thực, và anh sẽ luôn ở bên để đồng hành cùng em. ✨", 
+        text: "Mong mọi ước mơ, dự định của em đều thành hiện thực. Chuyện gì khó, cứ để anh cùng em gánh. ✨", 
         emoji: "💕",
-        gif: "gif1.gif"
+        gif: "bubu1.webp"
     },
     { 
-        text: "Chúc em một sinh nhật thật hạnh phúc. Cảm ơn vì đã là em, thương Quỳnh Bếuu nhiều lắm! 🎂💕", 
+        text: "Chúc em một sinh nhật thật hạnh phúc, được yêu thương thật nhiều, và nhiều nhất là từ anh. 🎂💕", 
         emoji: "🎉",
-        gif: "gif2.gif"
+        gif: "bubu2.gif"
     }
 ];
 

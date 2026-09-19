@@ -1,0 +1,724 @@
+/* =========================================================
+   🍬 THEME CHUNG — "Strawberry Milk" pastel palette
+   Dùng chung cho cả 4 trang. Chỉ chứa token màu, font,
+   nút kẹo dẻo (.candy) và hiệu ứng nhún (.jelly).
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&family=Mali:wght@500;600&display=swap');
+
+:root {
+    /* Hồng sữa dâu */
+    --pink-50:  #FFF5F8;
+    --pink-100: #FFE4EC;
+    --pink-200: #FFC8D8;
+    --pink-300: #FFA8C2;
+    --pink-400: #FF8FB1;
+    --pink-500: #F46E97;
+    --pink-700: #C94C77;
+
+    /* Tím khoai môn */
+    --lav-100: #F1EAFF;
+    --lav-200: #E0D1FF;
+    --lav-300: #C9B2FF;
+    --lav-500: #9D7FE8;
+
+    /* Điểm nhấn: bạc hà, bơ, đào */
+    --mint-200:   #C8F2E4;
+    --butter-200: #FFEFB5;
+    --peach-200:  #FFD9C7;
+
+    /* Nền & chữ */
+    --cream:      #FFFAF3;
+    --cocoa:      #6E4A5E;
+    --cocoa-soft: #8F6D80;
+
+    /* Kính mờ & bóng mềm */
+    --glass:        rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.85);
+    --shadow-soft:  0 14px 34px -12px rgba(244, 110, 151, 0.38),
+                    0 4px 14px -6px rgba(157, 127, 232, 0.22);
+
+    /* Font */
+    --font-display: 'Baloo 2', 'Quicksand', system-ui, sans-serif;
+    --font-body:    'Quicksand', system-ui, sans-serif;
+    --font-hand:    'Mali', 'Quicksand', cursive;
+}
+
+/* ---------- 💗 Con trỏ trái tim ---------- */
+:root {
+    --cursor-heart: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><defs><radialGradient id='g' cx='.35' cy='.3' r='.8'><stop offset='0' stop-color='%23fff'/><stop offset='.35' stop-color='%23FFB6CC'/><stop offset='1' stop-color='%23FF6F9C'/></radialGradient></defs><path d='M16 28C8 22 2 17 2 10.5 2 6.4 5 3.5 8.8 3.5c2.9 0 5.2 1.7 7.2 4.3 2-2.6 4.3-4.3 7.2-4.3C27 3.5 30 6.4 30 10.5 30 17 24 22 16 28z' fill='url(%23g)' stroke='%23fff' stroke-width='2.2' stroke-linejoin='round'/><ellipse cx='9.5' cy='9.5' rx='3' ry='1.8' fill='%23fff' opacity='.8' transform='rotate(-35 9.5 9.5)'/></svg>");
+    --cursor-heart-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><defs><radialGradient id='g' cx='.35' cy='.3' r='.8'><stop offset='0' stop-color='%23fff'/><stop offset='.35' stop-color='%23FF9DBB'/><stop offset='1' stop-color='%23E8567F'/></radialGradient></defs><path d='M17 31C8.5 24.5 2 19 2 12 2 7.5 5.3 4.5 9.4 4.5c3.1 0 5.5 1.8 7.6 4.6 2.1-2.8 4.5-4.6 7.6-4.6C28.7 4.5 32 7.5 32 12c0 7-6.5 12.5-15 19z' fill='url(%23g)' stroke='%23fff' stroke-width='2.4' stroke-linejoin='round'/><ellipse cx='10' cy='10.5' rx='3.2' ry='2' fill='%23fff' opacity='.85' transform='rotate(-35 10 10.5)'/><path d='M30 1.5c.4 2.4 1.1 3.1 3.5 3.5-2.4.4-3.1 1.1-3.5 3.5-.4-2.4-1.1-3.1-3.5-3.5 2.4-.4 3.1-1.1 3.5-3.5z' fill='%23FFE27A' stroke='%23fff' stroke-width='.8'/></svg>");
+}
+
+html,
+body {
+    cursor: var(--cursor-heart) 16 16, auto;
+}
+
+a,
+button,
+[onclick],
+.reason-card,
+.gift-box {
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+}
+
+input,
+textarea {
+    cursor: text;
+}
+
+/* Vệt lấp lánh theo chuột (cursor-trail.js) */
+.cursor-trail,
+.cursor-pop {
+    position: fixed;
+    z-index: 100000;
+    pointer-events: none;
+    line-height: 1;
+    translate: -50% -50%;
+    user-select: none;
+}
+
+.cursor-trail {
+    animation: trailFade 0.9s ease-out forwards;
+}
+
+@keyframes trailFade {
+    from { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+    to   { transform: translate(var(--dx), 28px) scale(0.3) rotate(var(--rot)); opacity: 0; }
+}
+
+.cursor-pop {
+    animation: popBurst 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes popBurst {
+    0%   { transform: translate(0, 0) scale(0.4); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(1.1) rotate(var(--rot)); opacity: 0; }
+}
+
+::selection {
+    background: var(--pink-200);
+    color: var(--cocoa);
+}
+
+/* ---------- 🍬 Nút kẹo dẻo ---------- */
+.candy {
+    --c-top:    #FFB3C9;
+    --c-bottom: #FF86AA;
+    --c-edge:   #E86892;
+    --c-glow:   rgba(255, 134, 170, 0.5);
+
+    position: relative;
+    top: 0;
+    display: inline-block;
+    max-width: 100%;
+    padding: 0.85em 1.9em 0.8em;
+    border: 0;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 1px 2px rgba(200, 70, 110, 0.35);
+    background: linear-gradient(180deg, var(--c-top), var(--c-bottom));
+    box-shadow:
+        0 6px 0 var(--c-edge),
+        0 16px 26px -8px var(--c-glow),
+        inset 0 -5px 0 rgba(0, 0, 0, 0.05),
+        inset 0 2px 0 rgba(255, 255, 255, 0.55);
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition: top 0.12s ease, box-shadow 0.12s ease, filter 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Vệt bóng loáng như kẹo */
+.candy::before {
+    content: '';
+    position: absolute;
+    top: 0.3em;
+    left: 1.2em;
+    width: 32%;
+    height: 0.4em;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.15));
+    pointer-events: none;
+}
+
+.candy::after {
+    content: '';
+    position: absolute;
+    top: 0.36em;
+    right: 1.2em;
+    width: 0.32em;
+    height: 0.32em;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+    pointer-events: none;
+}
+
+.candy:hover {
+    filter: brightness(1.04) saturate(1.08);
+}
+
+.candy:active {
+    top: 4px;
+    box-shadow:
+        0 2px 0 var(--c-edge),
+        0 8px 14px -6px var(--c-glow),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.05),
+        inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+
+.candy:focus-visible {
+    outline: 3px dashed var(--c-edge);
+    outline-offset: 6px;
+}
+
+/* Biến thể kẹo khoai môn */
+.candy--lav {
+    --c-top:    #DCC8FF;
+    --c-bottom: #B08CFF;
+    --c-edge:   #8E6BE0;
+    --c-glow:   rgba(176, 140, 255, 0.5);
+    text-shadow: 0 1px 2px rgba(110, 70, 200, 0.35);
+}
+
+/* Biến thể kẹo bạc hà */
+.candy--mint {
+    --c-top:    #C6F3E4;
+    --c-bottom: #72D4B6;
+    --c-edge:   #3FAF8F;
+    --c-glow:   rgba(111, 210, 180, 0.5);
+    text-shadow: 0 1px 2px rgba(40, 130, 100, 0.4);
+}
+
+/* ---------- 🍮 Nhún nhảy kiểu thạch ----------
+   Gắn .jelly lên phần tử KHÔNG bị GSAP điều khiển transform.
+   Với nút mà GSAP đang animate, bọc nó trong <div class="jelly-wrap jelly">. */
+.jelly-wrap {
+    display: inline-block;
+}
+
+.jelly:hover {
+    animation: jelly 0.75s ease both;
+}
+
+@keyframes jelly {
+    0%, 100% { transform: scale(1, 1); }
+    25%      { transform: scale(1.12, 0.88); }
+    45%      { transform: scale(0.93, 1.07); }
+    62%      { transform: scale(1.05, 0.95); }
+    80%      { transform: scale(0.98, 1.02); }
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15%      { transform: scale(1.18); }
+    30%      { transform: scale(1); }
+    45%      { transform: scale(1.12); }
+}
+
+@keyframes pastelShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ---------- Thanh cuộn kẹo ---------- */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--pink-50);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--pink-300), var(--lav-300));
+    border-radius: 999px;
+    border: 3px solid var(--pink-50);
+}
+
+/* Tôn trọng người dùng tắt chuyển động */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ---------- 🧭 Thanh tiến / lùi trang (nav.js) ---------- */
+.page-nav {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    font-family: var(--font-display);
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    box-shadow: var(--shadow-soft);
+}
+
+.page-nav__btn {
+    position: relative;
+    top: 0;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    padding-bottom: 3px;
+    border: 0;
+    border-radius: 50%;
+    font-family: inherit;
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    background: linear-gradient(180deg, #FFB3C9, #FF86AA);
+    box-shadow: 0 4px 0 #E86892, 0 8px 14px -6px rgba(255, 134, 170, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition: top 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+}
+
+.page-nav__btn:not(:disabled):hover {
+    animation: jelly 0.75s ease both;
+}
+
+.page-nav__btn:not(:disabled):active {
+    top: 3px;
+    box-shadow: 0 1px 0 #E86892, 0 4px 8px -4px rgba(255, 134, 170, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.page-nav__btn:disabled {
+    opacity: 0.35;
+    filter: grayscale(0.5);
+    cursor: var(--cursor-heart) 16 16, not-allowed;
+}
+
+.page-nav__dots {
+    display: flex;
+    gap: 2px;
+    padding: 0 2px;
+}
+
+.page-nav__dot {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    background: transparent;
+    opacity: 0.55;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, background 0.2s ease;
+}
+
+.page-nav__dot:hover {
+    opacity: 1;
+    transform: scale(1.18);
+}
+
+.page-nav__dot[aria-current="page"] {
+    opacity: 1;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--pink-300), 0 4px 10px -2px rgba(244, 110, 151, 0.5);
+}
+
+.page-nav__btn:focus-visible,
+.page-nav__dot:focus-visible {
+    outline: 3px dashed var(--pink-500);
+    outline-offset: 3px;
+}
+
+/* Nhãn nhỏ hiện khi rê chuột */
+.page-nav [data-label]::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    padding: 4px 10px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--pink-700);
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 6px 14px -6px rgba(201, 76, 119, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-nav [data-label]:not(:disabled):hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* ---------- 🔐 Màn hình khoá: đếm ngược + câu hỏi (gate.js) ---------- */
+html.gate-locked body > *:not(.gate) {
+    visibility: hidden;
+}
+
+.gate {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow-y: auto;
+    font-family: var(--font-body);
+    color: var(--cocoa);
+    background:
+        radial-gradient(rgba(255, 255, 255, 0.55) 2.5px, transparent 3px) 0 0 / 28px 28px,
+        linear-gradient(160deg, #FFD6E3, #FFC2D6 45%, #E3D0FF);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.gate--open {
+    opacity: 0;
+    transform: scale(1.08);
+    pointer-events: none;
+}
+
+.gate-card {
+    width: min(480px, 100%);
+    padding: 40px 28px 34px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 40px;
+    outline: 2px dashed rgba(244, 110, 151, 0.45);
+    outline-offset: -14px;
+    box-shadow: 0 24px 50px -18px rgba(201, 76, 119, 0.45);
+}
+
+.gate-card.shake {
+    animation: gateShake 0.5s ease;
+}
+
+@keyframes gateShake {
+    0%, 100% { translate: 0 0; }
+    20%      { translate: -10px 0; }
+    40%      { translate: 9px 0; }
+    60%      { translate: -6px 0; }
+    80%      { translate: 3px 0; }
+}
+
+.gate-view[hidden] {
+    display: none;
+}
+
+.gate-emoji {
+    position: relative;
+    display: inline-block;
+    font-size: 4.4rem;
+    line-height: 1;
+    filter: drop-shadow(0 10px 10px rgba(201, 76, 119, 0.3));
+    animation: gateBob 2.4s ease-in-out infinite;
+}
+
+.gate-zzz {
+    position: absolute;
+    top: -8px;
+    right: -26px;
+    font-size: 1.5rem;
+    animation: noteFloat 2.2s ease-out infinite;
+}
+
+@keyframes gateBob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50%      { transform: translateY(-10px) rotate(4deg); }
+}
+
+.gate h2 {
+    margin: 14px 0 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
+    line-height: 1.25;
+    color: var(--pink-700);
+}
+
+.gate-sub,
+.gate-note {
+    font-weight: 600;
+    color: var(--cocoa-soft);
+}
+
+.gate-note {
+    margin-top: 18px;
+    font-family: var(--font-hand);
+    font-size: 0.95rem;
+}
+
+.gate-timer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.tick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 76px;
+    padding: 12px 0 8px;
+    background: linear-gradient(180deg, #fff, #FFF1F5);
+    border: 2px solid #fff;
+    border-radius: 22px;
+    box-shadow: 0 5px 0 var(--pink-200), 0 12px 20px -10px rgba(201, 76, 119, 0.45);
+}
+
+.tick b {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--pink-500);
+}
+
+.tick span {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--lav-500);
+}
+
+.tick.bump b {
+    animation: tickBump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tickBump {
+    from { transform: scale(1.25); }
+    to   { transform: scale(1); }
+}
+
+.gate-q {
+    display: block;
+    margin: 12px 0 14px;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--lav-500);
+}
+
+.gate-input {
+    width: 100%;
+    padding: 14px 22px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    color: var(--cocoa);
+    background: #fff;
+    border: 2px solid var(--pink-200);
+    border-radius: 999px;
+    outline: none;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.gate-input:focus {
+    border-color: var(--pink-400);
+    box-shadow: 0 0 0 5px rgba(255, 168, 194, 0.4);
+}
+
+.gate-msg {
+    min-height: 1.5em;
+    margin: 10px 0 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--pink-700);
+}
+
+@media (max-width: 420px) {
+    .tick { width: 64px; }
+    .tick b { font-size: 1.6rem; }
+}
+
+/* ---------- 🎵 Nút nhạc (music.js) ---------- */
+.music-btn {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    margin-left: 2px;
+    border: 0;
+    border-radius: 50%;
+    font-size: 1.15rem;
+    line-height: 1;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--lav-200), 0 4px 10px -3px rgba(157, 127, 232, 0.5);
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.music-btn:hover {
+    transform: scale(1.12);
+}
+
+.music-btn.is-playing {
+    animation: musicSpin 3.2s linear infinite;
+    box-shadow: 0 0 0 2px var(--pink-300), 0 0 14px 2px rgba(255, 143, 177, 0.55);
+}
+
+/* Nốt nhạc bay lên khi đang phát */
+.music-btn.is-playing::before {
+    content: '♪';
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    font-size: 0.8rem;
+    color: var(--pink-500);
+    animation: noteFloat 1.8s ease-out infinite;
+}
+
+@keyframes musicSpin {
+    0%, 100% { rotate: -8deg; }
+    50%      { rotate: 8deg; }
+}
+
+@keyframes noteFloat {
+    from { opacity: 1; transform: translate(0, 0); }
+    to   { opacity: 0; transform: translate(8px, -16px); }
+}
+
+.music-btn:focus-visible {
+    outline: 3px dashed var(--pink-500);
+    outline-offset: 3px;
+}
+
+.music-btn--floating {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9000;
+}
+
+/* ---------- Khung trang con (shell.js) ---------- */
+.page-frame {
+    position: fixed;
+    inset: 0;
+    z-index: 9800;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #FFF7F2;
+    animation: frameIn 0.45s ease;
+}
+
+@keyframes frameIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Trang chủ nằm yên phía sau, không cần vẽ (trừ trình phát nhạc) */
+body.shell-framed > *:not(.page-frame):not(.yt-host) {
+    visibility: hidden;
+}
+
+/* Trình phát YouTube ẩn (chỉ lấy tiếng) */
+.yt-host {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Bong bóng "Đang phát" */
+.now-playing {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    z-index: 9100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100vw - 32px);
+    padding: 8px 16px 8px 10px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--pink-700);
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 2px solid #fff;
+    border-radius: 999px;
+    box-shadow: var(--shadow-soft);
+    translate: -50% 0;
+    animation: nowIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.6s ease, translate 0.6s ease;
+    pointer-events: none;
+}
+
+.now-playing.hide {
+    opacity: 0;
+    translate: -50% -20px;
+}
+
+.now-playing__disc {
+    font-size: 1.2rem;
+    animation: spinDisc 2s linear infinite;
+}
+
+.now-playing__text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@keyframes nowIn {
+    from { opacity: 0; translate: -50% -20px; }
+    to   { opacity: 1; translate: -50% 0; }
+}
+
+@keyframes spinDisc {
+    to { transform: rotate(360deg); }
+}
+
+/* Nút nhạc dùng chung tooltip với thanh điều hướng */
+.page-nav .music-btn[data-label]::after {
+    left: 50%;
+}
+
+/* Mờ dần khi chuyển trang */
+body.page-leaving {
+    opacity: 0 !important;
+    transition: opacity 0.4s ease;
+}
+
+@media (max-width: 700px) {
+    .page-nav {
+        left: 50%;
+        bottom: 12px;
+        translate: -50% 0;
+    }
+    .page-nav__btn { width: 38px; height: 38px; font-size: 1.5rem; }
+    .page-nav__dot { width: 32px; height: 32px; font-size: 1rem; }
+}

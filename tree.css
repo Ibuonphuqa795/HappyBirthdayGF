@@ -1,0 +1,892 @@
+/* =========================================================
+   TRANG 4 — Cây Ước Nguyện
+   Lưu ý: GSAP điều khiển transform của .wish-box, .orb, .modal,
+   .firefly → không đặt transform CSS lên chúng.
+   ========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Để body tự cắt phần đom đóm bay ra ngoài mép (tránh điện thoại nới rộng khung trang) */
+html {
+    overflow: hidden;
+}
+
+:root {
+    /* Cây tự co theo màn hình; vị trí tính sao cho tán cây nằm ở ~40% chiều cao
+       (đúng chỗ quả cầu bay tới trong tree.js: innerHeight * 0.4) */
+    --tree-size: min(470px, 57vh, 90vw);
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    font-family: var(--font-body);
+    color: #fff;
+    background: linear-gradient(180deg, #2A2250 0%, #463879 40%, #8A6BB3 78%, #E7A9C8 100%);
+}
+
+/* ---------- Bầu trời sao & mặt trăng ---------- */
+.stars-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+        radial-gradient(2px 2px at 28% 8%, #FFEFB5, transparent),
+        radial-gradient(1.5px 1.5px at 44% 26%, #fff, transparent),
+        radial-gradient(2px 2px at 63% 12%, #FFC8D8, transparent),
+        radial-gradient(1.5px 1.5px at 76% 30%, #fff, transparent),
+        radial-gradient(2px 2px at 91% 20%, #E0D1FF, transparent),
+        radial-gradient(1.5px 1.5px at 6% 42%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 36% 48%, #FFEFB5, transparent),
+        radial-gradient(1.5px 1.5px at 84% 50%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 55% 40%, #fff, transparent);
+    animation: starTwinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+    from { opacity: 0.55; }
+    to   { opacity: 1; }
+}
+
+/* Mặt trăng khuyết */
+.stars-bg::before {
+    content: '';
+    position: absolute;
+    top: 7vh;
+    right: 9vw;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    box-shadow: -14px 8px 0 0 #FFF1B8;
+    filter: drop-shadow(0 0 14px rgba(255, 239, 181, 0.75));
+}
+
+/* Mây mềm ở chân trời */
+.stars-bg::after {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -60px;
+    height: 180px;
+    background:
+        radial-gradient(closest-side, rgba(255, 228, 236, 0.55), transparent) 0% 100% / 40% 100% no-repeat,
+        radial-gradient(closest-side, rgba(241, 234, 255, 0.5), transparent) 50% 100% / 45% 110% no-repeat,
+        radial-gradient(closest-side, rgba(255, 228, 236, 0.5), transparent) 100% 100% / 40% 100% no-repeat;
+    filter: blur(6px);
+}
+
+/* ---------- Tiêu đề ---------- */
+.title-section {
+    position: relative;
+    z-index: 10;
+    margin-top: 44px;
+    padding: 0 16px;
+    text-align: center;
+}
+
+.title-section h1 {
+    margin-bottom: 8px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 5.5vw, 3.1rem);
+    line-height: 1.15;
+}
+
+.title-text {
+    background: linear-gradient(90deg, #FFC8D8, #FFEFB5 50%, #E0D1FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 14px rgba(255, 168, 194, 0.55));
+}
+
+.title-section p {
+    font-family: var(--font-hand);
+    font-weight: 500;
+    font-size: 1.08rem;
+    color: #F3E8FF;
+    text-shadow: 0 1px 8px rgba(42, 34, 80, 0.9), 0 0 2px rgba(42, 34, 80, 0.8);
+}
+
+/* ---------- Cây trái tim nở rộ ---------- */
+/* Tâm tán (trái tim mặt cười) ở y≈118/300 của viewBox → đặt `bottom` sao cho
+   nó rơi đúng 40% chiều cao màn hình (điểm quả cầu bay tới trong tree.js) */
+.tree-container {
+    position: absolute;
+    bottom: calc(60vh - var(--tree-size) * 0.607);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.tree {
+    width: var(--tree-size);
+    height: var(--tree-size);
+    overflow: visible;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 0 26px rgba(255, 168, 194, 0.5));
+    animation: sway 5s ease-in-out 3.8s infinite alternate;
+}
+
+@keyframes sway {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(1.8deg); }
+}
+
+/* Cú bật: bouncy như thạch */
+.tree {
+    --pop: cubic-bezier(0.34, 1.7, 0.64, 1);
+}
+
+/* 1 — Thân cây mọc lên từ mặt đất */
+.tree .trunk {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: grow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@keyframes grow {
+    from { transform: scaleY(0) scaleX(0.6); }
+    to   { transform: scaleY(1) scaleX(1); }
+}
+
+.tree .ground {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: popIn 0.6s var(--pop) both;
+}
+
+/* 2 — Cành cây vươn ra */
+.tree .branch {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 0.8s ease-out forwards;
+    animation-delay: var(--d, 1s);
+}
+
+@keyframes draw {
+    to { stroke-dashoffset: 0; }
+}
+
+/* 3 — Hàng trăm trái tim nở bung từ gốc ra ngoài */
+.tree .leaf {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: popIn 0.55s var(--pop) both;
+    animation-delay: var(--d, 2s);
+}
+
+@keyframes popIn {
+    from { transform: scale(0) rotate(-40deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 💌 Lá thư treo trên tán: hiện ra lần lượt sau khi cây nở, rồi đung đưa theo gió */
+.tree .hang-letters {
+    filter: drop-shadow(0 1.5px 1.5px rgba(110, 40, 70, 0.45)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+}
+
+.tree .hang {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+    animation: hangDrop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: var(--d, 3.5s);
+}
+
+@keyframes hangDrop {
+    0%   { transform: translateY(-14px) scaleY(0.2); opacity: 0; }
+    60%  { opacity: 1; }
+    100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+
+.tree .swing {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+    animation: letterSway var(--t, 3s) ease-in-out infinite alternate;
+    animation-delay: var(--sd, 0s);
+}
+
+@keyframes letterSway {
+    from { transform: rotate(-7deg); }
+    to   { transform: rotate(7deg); }
+}
+
+/* Một phần ba số tim đập nhè nhẹ sau khi nở */
+.tree .heart.beat {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: leafBeat 2.8s ease-in-out infinite;
+    animation-delay: var(--b, 0s);
+}
+
+@keyframes leafBeat {
+    0%, 100% { transform: scale(1); }
+    12%      { transform: scale(1.14); }
+    24%      { transform: scale(1); }
+    36%      { transform: scale(1.08); }
+}
+
+/* 4 — Tim mặt cười bật ra ở giữa */
+.tree .face-heart {
+    animation-duration: 0.8s;
+}
+
+.tree .face-bob {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: faceBob 3s ease-in-out 4.2s infinite;
+    transition: scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Tim giữa bấm được (tree-bloom.js) — khung cây vẫn không chặn chuột */
+.tree .face-heart {
+    pointer-events: auto;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    outline: none;
+}
+
+.tree .face-heart:hover .face-bob,
+.tree .face-heart:focus-visible .face-bob {
+    scale: 1.1;
+}
+
+.tree .face-heart:focus-visible path:first-child {
+    stroke: #FFE27A;
+    stroke-width: 3.5;
+}
+
+/* Vòng sáng nhắc "chạm vào đây" */
+.tree .tap-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+    animation: tapPulse 1.8s ease-out 4.4s infinite;
+}
+
+@keyframes tapPulse {
+    0%   { transform: scale(0.9); opacity: 0.9; }
+    100% { transform: scale(1.7); opacity: 0; }
+}
+
+.tree .tap-hint {
+    pointer-events: none;
+    font-family: var(--font-body);
+    animation:
+        haloIn 0.6s ease-out 4.4s both,
+        hintBob 2.4s ease-in-out 5s infinite;
+}
+
+@keyframes hintBob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+}
+
+/* Chạm rồi thì ẩn lời nhắc */
+.tree.tapped .tap-ring,
+.tree.tapped .tap-hint {
+    display: none;
+}
+
+.tree .bloom-fx,
+.tree .bloom-flash {
+    pointer-events: none;
+}
+
+.tree .bloom-flash {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+@keyframes faceBob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-2.5px); }
+}
+
+.tree .eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: blink 4.5s 4s infinite;
+}
+
+@keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(0.1); }
+}
+
+/* Hào quang: sáng lên khi cây nở, rồi thở đều */
+.tree .halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation:
+        haloIn 1.5s ease-out 1.6s both,
+        haloPulse 4s ease-in-out 3.2s infinite;
+}
+
+@keyframes haloIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes haloPulse {
+    0%, 100% { transform: scale(0.94); }
+    50%      { transform: scale(1.05); }
+}
+
+/* Sóng sáng "ta-da", sau đó cứ 4 giây lan ra một lần */
+.tree .ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    animation: ringBurst 4s ease-out infinite;
+    animation-delay: var(--d, 3.3s);
+}
+
+@keyframes ringBurst {
+    0%   { transform: scale(0.3); opacity: 0.95; }
+    45%  { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Tim rơi lả tả */
+.tree .petal {
+    opacity: 0;
+    animation: petalFall var(--t, 6s) ease-in infinite;
+    animation-delay: var(--d, 4s);
+}
+
+@keyframes petalFall {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    50%  { transform: translate(calc(var(--dx) * 0.6), 80px) rotate(160deg); }
+    85%  { opacity: 0.9; }
+    100% { transform: translate(var(--dx), 170px) rotate(320deg); opacity: 0; }
+}
+
+/* Lấp lánh xuất hiện khi cây đã nở */
+.tree .sparkles {
+    animation: haloIn 1s ease-out 3s both;
+}
+
+.tree .glitter {
+    animation: glitter var(--t, 1.4s) ease-in-out infinite alternate;
+    animation-delay: var(--d, 0s);
+}
+
+@keyframes glitter {
+    from { opacity: 0.1; }
+    to   { opacity: 1; }
+}
+
+.tree .star {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sparkTwinkle var(--t, 2.4s) ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+}
+
+@keyframes sparkTwinkle {
+    0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50%      { transform: scale(1) rotate(90deg); opacity: 1; }
+}
+
+/* Nơ trên thân khẽ lắc */
+.tree .bow {
+    transform-box: fill-box;
+    transform-origin: 50% 30%;
+    animation: bowWiggle 2.6s ease-in-out 1.2s infinite;
+}
+
+@keyframes bowWiggle {
+    0%, 100% { transform: rotate(-6deg); }
+    50%      { transform: rotate(6deg); }
+}
+
+/* ---------- Hộp điều ước ---------- */
+.wish-box {
+    position: absolute;
+    bottom: 24px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: min(420px, calc(100vw - 32px));
+    padding: 22px;
+    background: rgba(255, 255, 255, 0.14);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border-radius: 32px;
+    box-shadow: 0 18px 40px -14px rgba(26, 18, 60, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.wish-input {
+    width: 100%;
+    padding: 14px 22px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-align: center;
+    color: var(--cocoa);
+    background: rgba(255, 255, 255, 0.94);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 999px;
+    outline: none;
+    box-shadow: inset 0 2px 6px rgba(110, 74, 94, 0.12);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.wish-input::placeholder {
+    color: #B394A6;
+}
+
+.wish-input:focus {
+    border-color: var(--pink-300);
+    box-shadow: inset 0 2px 6px rgba(110, 74, 94, 0.12), 0 0 0 5px rgba(255, 168, 194, 0.4);
+}
+
+/* Rung nhẹ khi chưa nhập điều ước (không đụng transform vì GSAP dùng) */
+.wish-box.shake {
+    animation: boxShake 0.5s ease;
+}
+
+@keyframes boxShake {
+    0%, 100% { translate: 0 0; }
+    20%      { translate: -8px 0; }
+    40%      { translate: 7px 0; }
+    60%      { translate: -5px 0; }
+    80%      { translate: 3px 0; }
+}
+
+.wish-btn:disabled {
+    filter: saturate(0.7);
+    cursor: var(--cursor-heart) 16 16, progress;
+}
+
+/* Bong bóng nhắc nhở (thay alert) */
+.wish-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 230px;
+    z-index: 120;
+    max-width: calc(100vw - 32px);
+    padding: 12px 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.02rem;
+    text-align: center;
+    color: var(--pink-700);
+    background: #fff;
+    border: 3px solid var(--pink-200);
+    border-radius: 999px;
+    box-shadow: 0 14px 30px -10px rgba(26, 18, 60, 0.55);
+    opacity: 0;
+    translate: -50% 12px;
+    pointer-events: none;
+    transition: opacity 0.3s ease, translate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wish-toast.show {
+    opacity: 1;
+    translate: -50% 0;
+}
+
+/* ---------- Quả cầu ước nguyện ---------- */
+.orb {
+    position: absolute;
+    top: 0;
+    left: 0; /* tree.js dùng toạ độ viewport cho x/y */
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, #FFEFB5 60%, #FFC8D8);
+    box-shadow:
+        0 0 10px #fff,
+        0 0 22px #FFC8D8,
+        0 0 44px var(--pink-400),
+        0 0 70px var(--lav-300);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 15;
+}
+
+/* ---------- Popup thành công ---------- */
+.modal {
+    display: none; /* JS bật display:block */
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    width: min(420px, calc(100vw - 32px));
+    height: fit-content;
+    margin: auto;
+    padding: 48px 28px 32px;
+    text-align: center;
+    color: var(--cocoa);
+    background: var(--cream);
+    border: 3px solid #fff;
+    border-radius: 40px;
+    outline: 2px dashed var(--pink-300);
+    outline-offset: -12px;
+    box-shadow:
+        0 30px 60px -20px rgba(26, 18, 60, 0.6),
+        0 0 0 100vmax rgba(30, 22, 60, 0.45);
+}
+
+.modal::before {
+    content: '💌';
+    position: absolute;
+    top: -34px;
+    left: 50%;
+    width: 68px;
+    height: 68px;
+    margin-left: -34px;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    background: var(--pink-100);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 8px 18px -6px rgba(244, 110, 151, 0.5);
+}
+
+.modal h2 {
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--pink-500);
+}
+
+.modal p {
+    margin-bottom: 26px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.65;
+}
+
+.close-btn {
+    font-size: 1.05rem;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.letter-open-btn {
+    font-size: 1.02rem;
+}
+
+/* ---------- 💌 Lá thư bất ngờ (letter.js) ---------- */
+.letter-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 70px 16px 24px;
+    background: rgba(30, 22, 60, 0.6);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: haloIn 0.35s ease;
+}
+
+.letter-overlay[hidden] {
+    display: none;
+}
+
+/* Phong bì mở ra rồi mờ đi */
+.envelope {
+    position: absolute;
+    z-index: 1;
+    width: 200px;
+    height: 130px;
+    animation: envelopeAway 0.5s ease 0.9s forwards;
+}
+
+.envelope__body {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #FFD6E3, #FFB3C9);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.45);
+}
+
+.envelope__flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    height: 80px;
+    background: #FF9DBB;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 0;
+    animation: flapOpen 0.6s ease 0.25s forwards;
+}
+
+.envelope__seal {
+    position: absolute;
+    top: 58px;
+    left: 50%;
+    z-index: 3;
+    font-size: 2rem;
+    translate: -50% 0;
+    animation: haloIn 0.3s ease 0.2s reverse forwards;
+}
+
+@keyframes flapOpen {
+    to { transform: rotateX(180deg); }
+}
+
+@keyframes envelopeAway {
+    to { opacity: 0; transform: translateY(40px) scale(0.8); visibility: hidden; }
+}
+
+/* Tờ giấy viết thư */
+.letter-paper {
+    position: relative;
+    width: min(560px, 100%);
+    max-height: calc(100vh - 110px);
+    display: flex;
+    flex-direction: column;
+    padding: 34px 30px 22px;
+    color: var(--cocoa);
+    background: #FFFCF7;
+    border: 3px solid #fff;
+    border-radius: 24px;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    animation: paperUp 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) 0.9s forwards;
+}
+
+@keyframes paperUp {
+    from { opacity: 0; transform: translateY(60px) scale(0.9) rotate(-2deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+.letter-paper::before {
+    content: '🌸';
+    position: absolute;
+    top: -18px;
+    right: 22px;
+    font-size: 2rem;
+    rotate: 12deg;
+}
+
+.letter-text {
+    flex: 1;
+    min-height: 200px;
+    overflow-y: auto;
+    font-family: var(--font-hand);
+    font-weight: 500;
+    font-size: 1.08rem;
+    line-height: 32px;
+    /* Dòng kẻ giấy khớp đúng từng dòng chữ, cuộn theo nội dung */
+    background: repeating-linear-gradient(180deg, transparent 0 31px, rgba(255, 168, 194, 0.4) 31px 32px);
+    background-attachment: local;
+    cursor: var(--cursor-heart) 16 16, text;
+}
+
+.letter-text p {
+    margin: 0;
+    text-indent: 1.4em;
+}
+
+.letter-text p:first-child,
+.letter-text .letter-sign {
+    text-indent: 0;
+}
+
+.letter-text p:first-child {
+    font-weight: 600;
+    color: var(--pink-500);
+}
+
+.letter-sign {
+    margin-top: 6px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--pink-500);
+}
+
+/* Con trỏ bút đang viết */
+.letter-overlay:not(.done) .letter-text p:last-child::after {
+    content: '✎';
+    margin-left: 3px;
+    color: var(--pink-400);
+    animation: caretBlinkLetter 0.8s steps(1) infinite;
+}
+
+@keyframes caretBlinkLetter {
+    50% { opacity: 0; }
+}
+
+.letter-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.letter-skip {
+    padding: 6px 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--cocoa-soft);
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+}
+
+.letter-overlay.done .letter-skip {
+    visibility: hidden;
+}
+
+.letter-close {
+    font-size: 1rem;
+}
+
+/* ---------- 🎂 Màn kết thúc (letter.js) ---------- */
+.ending {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    display: grid;
+    place-items: center;
+    padding: 70px 16px 24px;
+    background: radial-gradient(circle at 50% 40%, rgba(255, 200, 216, 0.35), rgba(30, 22, 60, 0.7));
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: haloIn 0.5s ease;
+}
+
+.ending[hidden] {
+    display: none;
+}
+
+.ending-card {
+    width: min(460px, 100%);
+    padding: 40px 26px 30px;
+    text-align: center;
+    color: var(--cocoa);
+    background: var(--cream);
+    border: 3px solid #fff;
+    border-radius: 40px;
+    outline: 2px dashed var(--pink-300);
+    outline-offset: -12px;
+    box-shadow: 0 30px 60px -20px rgba(26, 18, 60, 0.6);
+    animation: endingPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes endingPop {
+    from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+
+.ending-emoji {
+    font-size: 3.4rem;
+    line-height: 1;
+    animation: heartbeat 1.6s ease-in-out infinite;
+}
+
+.ending-card h2 {
+    margin: 16px 0 10px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 6vw, 2.1rem);
+    line-height: 1.2;
+    color: var(--pink-500);
+}
+
+.ending-card p {
+    margin-bottom: 24px;
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--cocoa-soft);
+}
+
+.ending-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px 12px;
+}
+
+.ending-actions .candy {
+    font-size: 1rem;
+}
+
+/* ---------- Đom đóm (tạo bởi tree.js) ---------- */
+.firefly {
+    position: absolute;
+    border-radius: 50%;
+    background: #FFF6D6;
+    box-shadow: 0 0 8px #FFEFB5, 0 0 16px #FFEFB5;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.firefly:nth-child(3n) {
+    background: #FFE4EC;
+    box-shadow: 0 0 8px var(--pink-200), 0 0 16px var(--pink-300);
+}
+
+.firefly:nth-child(4n) {
+    background: #F1EAFF;
+    box-shadow: 0 0 8px var(--lav-200), 0 0 16px var(--lav-300);
+}
+
+@media (max-width: 600px) {
+    .stars-bg::before { width: 44px; height: 44px; top: 58vh; right: auto; left: 12vw; }
+}
+
+/* Bong bóng "Đang phát" nằm dưới thanh điều hướng */
+.now-playing {
+    top: 76px;
+}
+
+/* ---------- Thanh chuyển trang: đặt trên đầu để không đè hộp điều ước ---------- */
+.page-nav {
+    top: 12px;
+    bottom: auto;
+    left: 50%;
+    translate: -50% 0;
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.page-nav [data-label]::after {
+    top: calc(100% + 12px);
+    bottom: auto;
+}
+
+.title-section {
+    margin-top: 72px;
+}
+
+@media (max-width: 600px) {
+    .page-nav { top: 10px; bottom: auto; }
+    .title-section { margin-top: 70px; }
+}

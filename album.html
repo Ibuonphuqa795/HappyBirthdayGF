@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Của Hai Đứa 📷</title>
+    <script src="gate.js"></script>
+    <script src="shell.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="album.css">
+</head>
+<body>
+    <!-- Mưa đồ ăn (album.js) -->
+    <div class="food-rain" aria-hidden="true"></div>
+
+    <header class="album-header">
+        <span class="kicker">🧺 picnic kỷ niệm 🧺</span>
+        <h1>
+            <span class="h1-name">Album Của Quỳnh Bếuu</span>
+            <span class="h1-emoji">📸</span>
+        </h1>
+        <p class="subtitle">Mỗi tấm ảnh là một món ngon trong thực đơn hạnh phúc của hai đứa 🍰</p>
+
+        <!-- Băng chuyền đồ ăn -->
+        <div class="conveyor" aria-hidden="true">
+            <div class="conveyor__track"></div>
+        </div>
+
+        <div class="album-tools" role="toolbar" aria-label="Cách xem album">
+            <button type="button" class="tool candy" data-mode="scatter" aria-pressed="true">🧺 Rải ảnh</button>
+            <button type="button" class="tool candy candy--lav" data-mode="grid" aria-pressed="false">🎞️ Xếp gọn</button>
+            <button type="button" class="tool candy candy--mint" data-action="shuffle">🎲 Xáo lại</button>
+        </div>
+        <p class="album-hint">Kéo thả ảnh tuỳ thích • bấm vào ảnh để xem to nha 🍓</p>
+    </header>
+
+    <main class="board" data-mode="scatter" aria-label="Album ảnh"></main>
+
+    <!-- 🎬 Video (album.js → mảng VIDEOS). Chưa có video thì Quỳnh không thấy mục này -->
+    <section class="video-moment" hidden>
+        <h2>Khoảnh Khắc Dành Cho Em 🎬</h2>
+        <p class="video-sub">✦ bấm vào để xem nha ✦</p>
+        <div class="video-list"></div>
+    </section>
+
+    <footer class="album-footer">
+        <a href="tree.html" class="candy candy--lav album-next">Đến Cây Ước Nguyện 🌳✨</a>
+    </footer>
+
+    <!-- Xem ảnh to -->
+    <div class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh">
+        <button type="button" class="lb-close" aria-label="Đóng">✕</button>
+        <button type="button" class="lb-arrow lb-prev" aria-label="Ảnh trước">‹</button>
+        <figure class="lb-card">
+            <div class="lb-photo photo__img"></div>
+            <figcaption class="lb-caption"></figcaption>
+            <span class="lb-count"></span>
+        </figure>
+        <button type="button" class="lb-arrow lb-next" aria-label="Ảnh sau">›</button>
+    </div>
+
+    <script src="cursor-trail.js"></script>
+    <script src="sfx.js"></script>
+    <script src="album.js"></script>
+    <script src="nav.js"></script>
+    <script src="music.js"></script>
+</body>
+</html>

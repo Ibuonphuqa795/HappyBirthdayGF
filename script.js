@@ -6,7 +6,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 // Typing effect for greeting
-const greetingText = "Hey You Know What! You're the most adorable human i ever met! 💖";
+const greetingText = "Quỳnh Bếuu ơi! Em có biết em là cô gái đáng yêu nhất quả đất này không? 💖";
 const greetingElement = document.querySelector('.greeting');
 let charIndex = 0;
 
@@ -19,7 +19,7 @@ function typeGreeting() {
 }
 
 // Create floating elements
-const floatingElements = ['💖', '✨', '🌸', '💫', '💕'];
+const floatingElements = ['💖', '✨', '🌸', '💫', '💕', '🍰', '🍩', '🍫', '🍬', '🍭', '🍓', '🍔', '🍕', '🍡', '🧋', '🎂'];
 function createFloating() {
     const element = document.createElement('div');
     element.className = 'floating';
@@ -40,14 +40,28 @@ function createFloating() {
     });
 }
 
-// Initialize animations
-window.addEventListener('load', () => {
+// Handle Gift Open
+document.querySelector('.open-gift-btn').addEventListener('click', () => {
+    // Hide overlay
+    gsap.to('.intro-overlay', {
+        y: '-100%', 
+        duration: 1.2, 
+        ease: "power3.inOut",
+        onComplete: () => {
+            document.querySelector('.intro-overlay').style.display = 'none';
+        }
+    });
+
+    // Show container
+    document.querySelector('.container').style.display = 'block';
+
     // Title animation
     gsap.to('h1', {
         opacity: 1,
         duration: 1,
         y: 20,
-        ease: "bounce.out"
+        ease: "bounce.out",
+        delay: 0.5
     });
 
     // Button animation
@@ -55,14 +69,15 @@ window.addEventListener('load', () => {
         opacity: 1,
         duration: 1,
         y: -20,
-        ease: "back.out"
+        ease: "back.out",
+        delay: 1.5
     });
 
     // Start typing effect
-    typeGreeting();
+    setTimeout(typeGreeting, 1000);
 
     // Create floating elements periodically
-    setInterval(createFloating, 1000);
+    setInterval(createFloating, 600); // Faster generation for more cuteness
 });
 
 // Hover effects
@@ -88,7 +103,9 @@ window.addEventListener('load', () => {
                 opacity: 0,
                 duration: 1,
                 onComplete: () => {
-                    window.location.href = 'cause.html'; // Replace with the actual URL of the next page
+                    // Mở trang sau trong khung của trang chủ (shell.js) để nhạc phát liền mạch
+                    if (window.QBShell) window.QBShell.go('cause.html');
+                    else window.location.href = 'cause.html';
                 }
             });
         });
