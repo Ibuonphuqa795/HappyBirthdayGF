@@ -444,7 +444,7 @@
             const video = document.createElement('video');
             video.controls = true;
             video.playsInline = true;
-            video.preload = 'metadata';
+            video.preload = 'none'; // Đổi thành none để không tải trước video, giảm lag
             video.src = v.src;
             if (v.poster) video.poster = v.poster;
             // Xem video → nhạc nền tạm dừng; xem xong / dừng → nhạc phát tiếp
@@ -488,8 +488,13 @@
     }
     dealIn();
     if (!reduceMotion) {
-        for (let i = 0; i < 10; i++) dropFood(true);
-        setInterval(dropFood, 700);
+        // Trên điện thoại giảm lượng mưa đồ ăn xuống để đỡ lag
+        const isMobile = window.innerWidth < 640;
+        const dropCount = isMobile ? 4 : 10;
+        const dropInterval = isMobile ? 1500 : 700;
+
+        for (let i = 0; i < dropCount; i++) dropFood(true);
+        setInterval(dropFood, dropInterval);
         setTimeout(() => {
             foodConfetti({ angle: 60, origin: { x: 0, y: 0.7 } });
             foodConfetti({ angle: 120, origin: { x: 1, y: 0.7 } });
