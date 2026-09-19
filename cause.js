@@ -1,23 +1,23 @@
  // Reasons database
  const reasons = [
     { 
-        text: "You’re such a kind and wonderful person, and I feel lucky to share such a good bond with you. 💖", 
+        text: "Cảm ơn em vì đã xuất hiện và làm cho thế giới của anh trở nên ấm áp và rực rỡ hơn bao giờ hết. 💖", 
         emoji: "🌟",
         gif: "gif1.gif"
     },
     { 
-        text: "May your day be filled with love, laughter, and endless joy. 🌸 ", 
+        text: "Chúc Quỳnh Bếuu tuổi mới luôn xinh đẹp rạng ngời, lúc nào cũng cười thật tươi và bớt dỗi anh lại nha! 🌸", 
         emoji: "💗",
         gif: "gif2.gif"
     },
     { 
-        text: "Wishing you success, happiness, and everything your heart desires. ✨ ", 
+        text: "Mong rằng mọi ước mơ và dự định của em đều thành hiện thực, và anh sẽ luôn ở bên để đồng hành cùng em. ✨", 
         emoji: "💕",
         gif: "gif1.gif"
     },
     { 
-        text: "Stay the amazing girl you are—always spreading positivity around. Have the happiest year ahead! 🥳 ", 
-        emoji: "🌟",
+        text: "Chúc em một sinh nhật thật hạnh phúc. Cảm ơn vì đã là em, thương Quỳnh Bếuu nhiều lắm! 🎂💕", 
+        emoji: "🎉",
         gif: "gif2.gif"
     }
 ];
@@ -65,7 +65,7 @@ function displayNewReason() {
         reasonsContainer.appendChild(card);
         
         // Update counter
-        reasonCounter.textContent = `Reason ${currentReasonIndex + 1} of ${reasons.length}`;
+        reasonCounter.textContent = `Lời chúc ${currentReasonIndex + 1} / ${reasons.length}`;
         
         currentReasonIndex++;
 
@@ -76,7 +76,7 @@ function displayNewReason() {
                 duration: 0.5,
                 ease: "elastic.out",
                 onComplete: () => {
-                    shuffleButton.textContent = "Enter Our Storylane 💫";
+                    shuffleButton.textContent = "Xem tiếp kỷ niệm của chúng mình 💫";
                     shuffleButton.classList.add('story-mode');
                     shuffleButton.addEventListener('click', () => {
                         gsap.to('body', {
