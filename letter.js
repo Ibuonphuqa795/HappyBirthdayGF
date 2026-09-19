@@ -130,6 +130,11 @@
     function hideEnding() {
         ending.hidden = true;
         document.body.classList.remove('ending-open');
+        // Ẩn luôn modal "Đã Gửi Thành Công!" để người dùng ngắm cây trọn vẹn
+        const successModal = document.querySelector('.modal');
+        if (successModal) {
+            successModal.style.display = 'none';
+        }
     }
 
     if (ending) {
