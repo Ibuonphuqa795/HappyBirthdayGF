@@ -429,10 +429,21 @@ body.celebrating .balloons {
     opacity: 1;
 }
 
-.balloon {
+/* Lớp ngoài: chỉ bay thẳng lên, `linear` với đúng hai mốc → tốc độ đều tuyệt đối */
+.balloon-lift {
     position: absolute;
     bottom: -180px;
     left: var(--left);
+    animation: balloonRise var(--dur) linear infinite;
+    animation-delay: var(--delay);
+}
+
+/* Lớp trong: chỉ đu qua đu lại, `ease-in-out alternate` → tới hai đầu thì chậm dần
+   rồi đổi chiều êm ru, đúng kiểu bong bóng gặp gió */
+.balloon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     width: var(--size);
     height: calc(var(--size) * 1.18);
     border-radius: 50% 50% 48% 52% / 58% 58% 42% 42%;
@@ -441,7 +452,7 @@ body.celebrating .balloons {
         radial-gradient(circle at 36% 34%, color-mix(in srgb, var(--c) 45%, #fff), var(--c) 58%, color-mix(in srgb, var(--c) 82%, #6E4A5E));
     box-shadow: inset -5px -8px 14px rgba(110, 74, 94, 0.1);
     opacity: 0.93;
-    animation: balloonRise var(--dur) linear infinite;
+    animation: balloonSway calc(var(--dur) / 3.5) ease-in-out infinite alternate;
     animation-delay: var(--delay);
 }
 
@@ -471,11 +482,13 @@ body.celebrating .balloons {
 }
 
 @keyframes balloonRise {
-    0%   { transform: translate(0, 0) rotate(-4deg); }
-    25%  { transform: translate(var(--sway), -32vh) rotate(4deg); }
-    50%  { transform: translate(0, -64vh) rotate(-3deg); }
-    75%  { transform: translate(calc(var(--sway) * -1), -96vh) rotate(3deg); }
-    100% { transform: translate(0, calc(-100vh - 280px)) rotate(-2deg); }
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(-100vh - 280px)); }
+}
+
+@keyframes balloonSway {
+    from { transform: translateX(calc(var(--sway) * -1)) rotate(-4deg); }
+    to   { transform: translateX(var(--sway)) rotate(4deg); }
 }
 
 /* ---------- 🎂 Bánh kem thổi nến ---------- */
@@ -668,8 +681,9 @@ body.celebrating .balloons {
     .greeting { margin-bottom: 2rem; }
 }
 
-/* Điện thoại: nền chuyển màu 400% phải vẽ lại cả màn hình mỗi khung hình → đứng yên cho mượt */
-@media (max-width: 640px) {
+/* Máy cảm ứng (iPhone/iPad): nền chuyển màu 400% phải vẽ lại CẢ màn hình ở mỗi
+   khung hình, chạy hoài không nghỉ → cho nó đứng yên. Máy tính có chuột vẫn giữ. */
+@media (max-width: 640px), (hover: none) {
     body {
         animation: none;
         background-size: 100% 100%;

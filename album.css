@@ -53,21 +53,40 @@ body.lb-open {
     pointer-events: none;
 }
 
+/* Lớp ngoài: chỉ rơi thẳng xuống, hai mốc + `linear` → tốc độ đều, không gãy nhịp.
+   KHÔNG dùng filter ở đây: filter buộc trình duyệt tô lại từng món ăn ở mỗi khung
+   hình thay vì chỉ trượt lớp có sẵn — hơn 20 món rơi cùng lúc là đủ giật. */
 .food-drop {
     position: absolute;
     top: -60px;
     left: var(--x);
     font-size: var(--s);
     opacity: 0.8;
-    /* KHÔNG dùng filter ở đây: filter buộc trình duyệt tô lại từng món ăn ở mỗi khung
-       hình thay vì chỉ trượt lớp có sẵn — hơn 20 món rơi cùng lúc là đủ giật. */
     animation: foodFall var(--d) linear forwards;
 }
 
+/* Lớp trong: đưa ngang + xoay, đổi chiều êm ở hai đầu */
+.food-drop__i {
+    display: block;
+    font-style: normal;
+    animation:
+        foodSway calc(var(--d) / 2.5) ease-in-out infinite alternate,
+        foodSpin var(--d) linear forwards;
+}
+
 @keyframes foodFall {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    50%  { transform: translate(var(--sway), 55vh) rotate(calc(var(--rot) * 0.5)); }
-    100% { transform: translate(0, calc(100vh + 120px)) rotate(var(--rot)); }
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(100vh + 120px)); }
+}
+
+@keyframes foodSway {
+    from { transform: translateX(calc(var(--sway) * -0.5)); }
+    to   { transform: translateX(calc(var(--sway) * 0.5)); }
+}
+
+@keyframes foodSpin {
+    from { rotate: 0deg; }
+    to   { rotate: var(--rot); }
 }
 
 /* ---------- Tiêu đề ---------- */

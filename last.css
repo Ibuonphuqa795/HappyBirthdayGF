@@ -325,8 +325,9 @@ body {
     .final-message p { font-size: 1rem; line-height: 32px; }
 }
 
-/* Điện thoại: nền chuyển màu 400% phải vẽ lại cả màn hình mỗi khung hình → đứng yên cho mượt */
-@media (max-width: 640px) {
+/* Máy cảm ứng (iPhone/iPad): nền chuyển màu 400% phải vẽ lại CẢ màn hình ở mỗi
+   khung hình, chạy hoài không nghỉ → cho nó đứng yên. Máy tính có chuột vẫn giữ. */
+@media (max-width: 640px), (hover: none) {
     body {
         animation: none;
         background-size: 100% 100%;

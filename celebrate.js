@@ -1,7 +1,10 @@
 // Hiệu ứng chúc mừng sinh nhật (trang 1): băng rôn, bong bóng bay, bánh kem thổi nến, pháo giấy
 (() => {
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isPhone = matchMedia('(max-width: 640px)').matches; // điện thoại → bớt hiệu ứng cho đỡ lag
+    // Máy cảm ứng (iPhone/iPad) yếu hơn máy tính nhiều → giảm hiệu ứng.
+    // Dùng `hover: none` thay vì chỉ đo bề ngang: iPad rộng 768-1024px, nếu đo
+    // theo bề ngang thì nó bị xếp chung với máy tính và nhận đủ hiệu ứng nặng.
+    const isPhone = matchMedia('(max-width: 640px), (hover: none)').matches;
     const PASTEL = ['#FF8FB1', '#FFC8D8', '#FFB38A', '#FFE08A', '#C9B2FF', '#BDF0E0', '#ffffff'];
     const BALLOON_COLORS = ['#FF8FB1', '#FFB3C9', '#C9B2FF', '#FFD08A', '#9FE3CF', '#FFA98F', '#F46E97'];
 
@@ -25,8 +28,15 @@
     document.querySelectorAll('.balloons[data-count]').forEach((box) => {
         const count = Math.min(Number(box.dataset.count) || 6, isPhone ? 5 : 99);
         for (let i = 0; i < count; i++) {
+            // Hai lớp: lớp ngoài chỉ bay LÊN (đều tăm tắp), lớp trong chỉ ĐU NGANG.
+            // Gộp cả hai vào một keyframes thì tới mỗi mốc đổi chiều đu, hướng đi
+            // bẻ gập một cái — nhìn thấy rõ thành cú giật. Tách ra thì đường bay
+            // mượt như sóng thật.
             const b = document.createElement('span');
-            b.className = 'balloon';
+            b.className = 'balloon-lift';
+            const inner = document.createElement('span');
+            inner.className = 'balloon';
+            b.appendChild(inner);
             const size = 44 + Math.random() * 30;
             const duration = 11 + Math.random() * 8;
             b.style.setProperty('--c', BALLOON_COLORS[i % BALLOON_COLORS.length]);

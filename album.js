@@ -81,6 +81,10 @@
         'rgba(200, 242, 228, 0.95)', 'rgba(255, 239, 181, 0.95)'];
 
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Máy cảm ứng (iPhone/iPad) yếu hơn máy tính nhiều → giảm hiệu ứng.
+    // Dùng `hover: none` thay vì chỉ đo bề ngang: iPad rộng 768-1024px, nếu đo
+    // theo bề ngang thì nó bị xếp chung với máy tính và nhận đủ hiệu ứng nặng.
+    const lightDevice = matchMedia('(max-width: 640px), (hover: none)').matches;
     const rand = (a, b) => a + Math.random() * (b - a);
     const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
@@ -252,7 +256,7 @@
         const cx = board.clientWidth / 2;
         const cy = Math.min(board.clientHeight / 2, 240);
         // Điện thoại: chỉ "chia bài" những tấm đầu nhìn thấy được, tránh 46 animation cùng lúc
-        const limit = matchMedia('(max-width: 640px)').matches ? 8 : cards.length;
+        const limit = lightDevice ? 8 : cards.length;
         cards.slice(0, limit).forEach((c, i) => {
             const dx = cx - (c.offsetLeft + c.offsetWidth / 2);
             const dy = cy - (c.offsetTop + c.offsetHeight / 2);
@@ -294,6 +298,13 @@
 
     modeButtons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
     document.querySelector('.tool[data-action="shuffle"]').addEventListener('click', shuffle);
+
+    // Kéo thả chỉ chạy bằng chuột (trên cảm ứng thì kéo là để cuộn trang), nên máy
+    // cảm ứng đừng hứa "kéo thả" — viết đúng thứ bấm được thôi
+    if (matchMedia('(hover: none)').matches) {
+        const hint = document.querySelector('.album-hint');
+        if (hint) hint.textContent = 'Bấm vào ảnh để xem to nha 🍓';
+    }
 
     /* ---------- Kéo thả ảnh (chuột) & bấm để xem to ---------- */
     let zTop = cards.length + 1;
@@ -460,17 +471,28 @@
     function dropFood(prewarm) {
         // Càng nhiều món rơi cùng lúc thì trình duyệt càng phải ghép nhiều lớp mỗi khung hình
         if (document.hidden || document.body.classList.contains('lb-open')) return;
-        if (rain.childElementCount > (window.innerWidth < 640 ? 6 : 12)) return;
+        if (rain.childElementCount > (lightDevice ? 6 : 12)) return;
+        // Lớp ngoài rơi thẳng xuống (đều), lớp trong đưa qua đưa lại — tách ra thì
+        // đường rơi không bị bẻ gập ở giữa chặng như khi gộp chung một keyframes
         const el = document.createElement('span');
         el.className = 'food-drop';
-        el.textContent = pick(FOODS);
+        const inner = document.createElement('i');
+        inner.className = 'food-drop__i';
+        inner.textContent = pick(FOODS);
+        el.appendChild(inner);
         const duration = rand(10, 17);
         el.style.setProperty('--x', rand(0, 97) + 'vw');
         el.style.setProperty('--s', rand(18, 34) + 'px');
         el.style.setProperty('--d', duration + 's');
         el.style.setProperty('--sway', rand(-60, 60) + 'px');
         el.style.setProperty('--rot', rand(-360, 360) + 'deg');
-        if (prewarm) el.style.animationDelay = -rand(0, duration) + 's';
+        if (prewarm) {
+            // Món rơi sẵn giữa chừng: lớp trong phải lệch cùng một nhịp với lớp ngoài,
+            // nếu không nó sẽ rơi lưng chừng mà mới bắt đầu xoay từ 0
+            const back = -rand(0, duration) + 's';
+            el.style.animationDelay = back;
+            inner.style.animationDelay = back;
+        }
         el.addEventListener('animationend', () => el.remove());
         rain.appendChild(el);
     }
@@ -555,7 +577,7 @@
     dealIn();
     if (!reduceMotion) {
         // Trên điện thoại giảm lượng mưa đồ ăn xuống để đỡ lag
-        const isMobile = window.innerWidth < 640;
+        const isMobile = lightDevice;
         const dropCount = isMobile ? 3 : 6;
         const dropInterval = isMobile ? 1800 : 1100;
 

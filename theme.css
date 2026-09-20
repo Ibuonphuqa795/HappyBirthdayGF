@@ -725,11 +725,11 @@ body.page-leaving {
 
 /* =========================================================
    ĐIỆN THOẠI — bớt hiệu ứng nặng
-   `backdrop-filter` trên thanh điều hướng cố định khiến iOS phải làm mờ lại
-   cả vùng đó ở MỖI khung hình khi cuộn → giật. Trên màn hình nhỏ đổi sang
+   `backdrop-filter` trên thanh điều hướng cố định khiến iPhone/iPad phải làm mờ
+   lại cả vùng đó ở MỖI khung hình khi cuộn → giật. Trên máy cảm ứng đổi sang
    nền đục, nhìn vẫn y hệt mà mượt hẳn.
    ========================================================= */
-@media (max-width: 640px) {
+@media (max-width: 640px), (hover: none) {
     .page-nav {
         background: rgba(255, 255, 255, 0.92);
         -webkit-backdrop-filter: none;

@@ -7,7 +7,7 @@ const wishBox = document.querySelector('.wish-box');
 // Create magical fireflies background
 function createFireflies() {
     // Giảm số lượng đom đóm trên điện thoại để đỡ lag
-    const fireflyCount = window.innerWidth < 640 ? 15 : 40;
+    const fireflyCount = matchMedia('(max-width: 640px), (hover: none)').matches ? 15 : 40;
     for(let i = 0; i < fireflyCount; i++) {
         let firefly = document.createElement('div');
         firefly.className = 'firefly';

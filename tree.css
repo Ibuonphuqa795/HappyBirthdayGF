@@ -112,6 +112,7 @@ body {
     content: '';
     position: absolute;
     inset: 0;
+    animation: lanternDrift calc(var(--t, 26s) / 3) ease-in-out infinite alternate;
     border-radius: 46% 46% 38% 38% / 36% 36% 54% 54%;
     background: linear-gradient(180deg, #FFF0C0 0%, #FFCB86 45%, #FF9E6B 100%);
     box-shadow:
@@ -120,12 +121,13 @@ body {
         inset 0 -5px 7px rgba(255, 120, 80, 0.32);
 }
 
-/* Cái tua nhỏ đung đưa dưới đáy đèn */
+/* Cái tua nhỏ dưới đáy đèn — đu cùng nhịp với thân đèn */
 .lantern::after {
     content: '';
     position: absolute;
     left: 50%;
     bottom: -7px;
+    animation: lanternDrift calc(var(--t, 26s) / 3) ease-in-out infinite alternate;
     width: 3px;
     height: 8px;
     margin-left: -1.5px;
@@ -134,11 +136,16 @@ body {
 }
 
 @keyframes lanternRise {
-    0%   { transform: translate(0, 0); opacity: 0; }
+    0%   { transform: translateY(0); opacity: 0; }
     7%   { opacity: 0.95; }
-    50%  { transform: translate(var(--drift, 24px), -58vh); }
     88%  { opacity: 0.85; }
-    100% { transform: translate(0, -125vh); opacity: 0; }
+    100% { transform: translateY(-125vh); opacity: 0; }
+}
+
+/* Đu ngang tách riêng khỏi việc bay lên, đổi chiều êm ở hai đầu */
+@keyframes lanternDrift {
+    from { transform: translateX(calc(var(--drift, 24px) * -1)); }
+    to   { transform: translateX(var(--drift, 24px)); }
 }
 
 /* ✨ Chòm sao hình trái tim */
@@ -227,8 +234,31 @@ body {
     height: var(--tree-size);
     overflow: visible;
     transform-origin: 50% 100%;
-    filter: drop-shadow(0 0 26px rgba(255, 168, 194, 0.5));
     animation: sway 5s ease-in-out 3.8s infinite alternate;
+}
+
+/* Quầng sáng quanh tán cây.
+   TUYỆT ĐỐI KHÔNG đặt `filter: drop-shadow` lên chính .tree: bên trong cây lúc nào
+   cũng có thứ đang động (tim đập, thư đung đưa, lấp lánh, tim rơi), mà mỗi lần ruột
+   thay đổi thì trình duyệt phải tính lại bóng mờ cho CẢ 300 trái tim — nặng nhất
+   trang này, và là thứ làm iPhone/iPad khựng.
+   Quầng sáng để riêng thành một lớp tĩnh: vẽ một lần rồi thôi. */
+.tree-container::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 39%;
+    width: calc(var(--tree-size) * 1.12);
+    height: calc(var(--tree-size) * 1);
+    translate: -50% -50%;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(closest-side,
+        rgba(255, 190, 214, 0.5),
+        rgba(255, 168, 194, 0.22) 52%,
+        rgba(224, 184, 255, 0.08) 72%,
+        transparent 82%);
 }
 
 @keyframes sway {
@@ -285,10 +315,6 @@ body {
 }
 
 /* 💌 Lá thư treo trên tán: hiện ra lần lượt sau khi cây nở, rồi đung đưa theo gió */
-.tree .hang-letters {
-    filter: drop-shadow(0 1.5px 1.5px rgba(110, 40, 70, 0.45)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
-}
-
 .tree .hang {
     transform-box: fill-box;
     transform-origin: 50% 0;
@@ -302,9 +328,14 @@ body {
     100% { transform: translateY(0) scaleY(1); opacity: 1; }
 }
 
+/* Bóng của lá thư đặt lên CHÍNH lá đang đung đưa, không đặt lên nhóm cha.
+   Đặt ở nhóm cha thì mỗi lần một lá nhúc nhích là cả 8 lá phải tính lại bóng;
+   đặt lên từng lá thì ruột lá đứng yên → trình duyệt vẽ bóng một lần rồi chỉ
+   xoay tấm ảnh đã vẽ sẵn đó. */
 .tree .swing {
     transform-box: fill-box;
     transform-origin: 50% 0;
+    filter: drop-shadow(0 1.5px 1.5px rgba(110, 40, 70, 0.45)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
     animation: letterSway var(--t, 3s) ease-in-out infinite alternate;
     animation-delay: var(--sd, 0s);
 }
@@ -955,22 +986,23 @@ body {
     box-shadow: 0 0 8px var(--lav-200), 0 0 16px var(--lav-300);
 }
 
-/* ---------- Điện thoại: bớt animation chạy liên tục cho đỡ lag ---------- */
-@media (max-width: 640px) {
-    /* Hai bên màn hình hẹp đã kín cây rồi → chỉ giữ vài chiếc đèn cho có không khí */
-    .constel,
-    .lantern:nth-of-type(3),
-    .lantern:nth-of-type(6) {
-        display: none;
-    }
-
-    /* 100 trái tim đập cùng lúc rất nặng với máy yếu → chỉ giữ cây đung đưa */
+/* ---------- Máy cảm ứng (iPhone/iPad): bớt animation chạy liên tục ---------- */
+@media (max-width: 640px), (hover: none) {
+    /* 100 trái tim đập + 55 đốm nhấp nháy cùng lúc là quá sức máy cảm ứng;
+       cây vẫn đung đưa, thư vẫn lắc, tim vẫn rơi nên nhìn không hề tĩnh */
     .tree .heart.beat,
     .tree .glitter {
         animation: none;
     }
-    .tree {
-        filter: drop-shadow(0 0 18px rgba(255, 168, 194, 0.45));
+}
+
+/* Riêng màn hình hẹp: hai bên đã kín cây, bỏ bớt trang trí cho thoáng.
+   iPad vẫn còn chỗ nên vẫn giữ đủ chòm sao và đèn lồng. */
+@media (max-width: 640px) {
+    .constel,
+    .lantern:nth-of-type(3),
+    .lantern:nth-of-type(6) {
+        display: none;
     }
 }
 
