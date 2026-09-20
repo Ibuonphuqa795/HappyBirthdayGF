@@ -32,12 +32,24 @@ Các trang nối với nhau bằng thanh điều hướng tiến/lùi ở góc m
 | Nhạc nền | `music.js` | `YOUTUBE_ID` hoặc `MUSIC_SRC` |
 | Địa chỉ nhận điều ước | `tree.js` | `access_key` của Web3Forms |
 
+### 👀 Xem thử khi màn khoá đang bật
+
+Màn đếm ngược đang **bật** (`COUNTDOWN_ON = true`), mở khoá lúc **00:00 ngày 21/9**.
+Muốn vào xem/sửa mà không phải chờ:
+
+| Mở địa chỉ | Kết quả |
+|---|---|
+| `…/index.html?xem-truoc` | Bỏ qua màn khoá. **Máy này nhớ luôn** — mở tab mới hay tắt trình duyệt vào lại vẫn xem được |
+| `…/index.html?khoa-lai` | Tắt chế độ xem trước, quay lại đúng thứ Quỳnh sẽ thấy |
+
+Chỉ cần mở `?xem-truoc` **một lần**. Cửa sổ ẩn danh thì luôn thấy màn khoá, tiện để
+kiểm tra lại.
+
 ### 🔒 Nhớ làm trước khi gửi link
 
-1. `gate.js`: đặt lại `COUNTDOWN_ON = true` (đang để `false` cho tiện sửa).
-2. `gate.js`: đổi câu hỏi bí mật và đáp án.
-3. `letter.js`: viết lại nội dung lá thư cho đúng ý mình.
-4. Mở thử trên điện thoại ở chế độ ẩn danh (trang có nhớ trạng thái trong `localStorage`).
+1. `gate.js`: đổi câu hỏi bí mật và đáp án.
+2. `letter.js`: viết lại nội dung lá thư cho đúng ý mình.
+3. Mở cửa sổ ẩn danh xem thử một lượt — đó đúng là thứ Quỳnh sẽ thấy.
 
 ### 🎵 Nhạc nền trên iPhone/iPad
 

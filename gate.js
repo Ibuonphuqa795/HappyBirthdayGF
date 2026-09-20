@@ -10,7 +10,7 @@
        (Tắt cả hai → không còn màn khoá nào, vào thẳng hộp quà)
        ⚠️ Nhớ bật COUNTDOWN_ON = true lại trước khi gửi link cho Quỳnh nha!
        ======================================================= */
-    const COUNTDOWN_ON = false;
+    const COUNTDOWN_ON = true;
     const QUESTION_ON = true;
 
     /* =======================================================
@@ -19,7 +19,9 @@
        - QUESTION / ANSWERS: câu hỏi bí mật và các đáp án được chấp nhận
          (không phân biệt hoa thường, dấu, khoảng trắng hay dấu câu)
        - Muốn xem thử trước ngày sinh nhật: mở  index.html?xem-truoc
-         (chỉ có hiệu lực trong tab đó, không lưu lại)
+         Máy này sẽ nhớ luôn, mở tab mới hay tắt trình duyệt vào lại vẫn xem được.
+       - Muốn xem lại đúng thứ Quỳnh sẽ thấy: mở  index.html?khoa-lai
+         (hoặc mở cửa sổ ẩn danh)
        ======================================================= */
     const BIRTHDAY = '2026-09-21T00:00:00+07:00';
     const QUESTION = 'Sinh nhật của em là ngày nào nè? 🎂';
@@ -31,9 +33,22 @@
 
     const safe = (fn, fallback) => { try { return fn(); } catch (e) { return fallback; } };
     const params = new URLSearchParams(location.search);
-    if (params.has('xem-truoc')) safe(() => sessionStorage.setItem(PREVIEW_KEY, '1'));
 
-    const preview = safe(() => sessionStorage.getItem(PREVIEW_KEY) === '1', false);
+    // Nhớ vào localStorage chứ không phải sessionStorage: sessionStorage mất sạch khi
+    // đóng tab, nên mỗi lần mở lại web để sửa là lại bị màn khoá chặn.
+    if (params.has('xem-truoc')) {
+        safe(() => localStorage.setItem(PREVIEW_KEY, '1'));
+        safe(() => sessionStorage.removeItem(PREVIEW_KEY));
+    }
+    // Tắt chế độ xem trước để kiểm tra lại đúng thứ người nhận sẽ thấy
+    if (params.has('khoa-lai')) {
+        safe(() => localStorage.removeItem(PREVIEW_KEY));
+        safe(() => sessionStorage.removeItem(PREVIEW_KEY));
+        safe(() => localStorage.removeItem(UNLOCK_KEY));
+    }
+
+    const preview = safe(() => localStorage.getItem(PREVIEW_KEY) === '1', false)
+        || safe(() => sessionStorage.getItem(PREVIEW_KEY) === '1', false);
     const unlocked = safe(() => localStorage.getItem(UNLOCK_KEY) === '1', false);
     if (preview || unlocked) return;
 
