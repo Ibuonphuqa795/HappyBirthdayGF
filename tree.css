@@ -84,6 +84,131 @@ body {
     filter: blur(6px);
 }
 
+/* ---------- Cảnh đêm hai bên cây ----------
+   Tất cả chỉ chạy `transform` / `opacity` (thứ trình duyệt trượt được sẵn),
+   không dùng `filter` trên phần đang chuyển động → không tốn thêm khung hình nào.
+   Ánh sáng của đèn là `box-shadow` tô một lần vào lớp, sau đó cả lớp cùng trôi lên. */
+.night-deco {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* 🏮 Đèn lồng ước nguyện thả bay lên */
+.lantern {
+    position: absolute;
+    left: var(--x);
+    bottom: -80px;
+    width: 26px;
+    height: 33px;
+    scale: var(--sc, 1);
+    animation: lanternRise var(--t, 26s) linear var(--d, 0s) infinite;
+}
+
+/* Thân đèn giấy */
+.lantern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 46% 46% 38% 38% / 36% 36% 54% 54%;
+    background: linear-gradient(180deg, #FFF0C0 0%, #FFCB86 45%, #FF9E6B 100%);
+    box-shadow:
+        0 0 22px 7px rgba(255, 186, 120, 0.42),
+        0 0 8px 2px rgba(255, 226, 170, 0.6),
+        inset 0 -5px 7px rgba(255, 120, 80, 0.32);
+}
+
+/* Cái tua nhỏ đung đưa dưới đáy đèn */
+.lantern::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -7px;
+    width: 3px;
+    height: 8px;
+    margin-left: -1.5px;
+    border-radius: 0 0 3px 3px;
+    background: linear-gradient(180deg, #FFB07A, rgba(255, 176, 122, 0));
+}
+
+@keyframes lanternRise {
+    0%   { transform: translate(0, 0); opacity: 0; }
+    7%   { opacity: 0.95; }
+    50%  { transform: translate(var(--drift, 24px), -58vh); }
+    88%  { opacity: 0.85; }
+    100% { transform: translate(0, -125vh); opacity: 0; }
+}
+
+/* ✨ Chòm sao hình trái tim */
+.constel {
+    position: absolute;
+    width: 132px;
+    opacity: 0.72;
+    stroke: rgba(255, 230, 245, 0.42);
+    stroke-width: 0.8;
+    fill: #FFF6FB;
+    animation: constelTwinkle 5.5s ease-in-out infinite alternate;
+}
+
+.constel polyline {
+    fill: none;
+    stroke-dasharray: 2.5 3.5;
+}
+
+.constel--left {
+    top: 21vh;
+    left: 6vw;
+    rotate: -9deg;
+}
+
+.constel--right {
+    top: 15vh;
+    right: 5vw;
+    width: 104px;
+    rotate: 11deg;
+    animation-delay: -2.6s;
+}
+
+@keyframes constelTwinkle {
+    from { opacity: 0.42; }
+    to   { opacity: 0.95; }
+}
+
+/* 🌠 Sao băng — hiện thoáng qua rồi biến mất */
+.shoot {
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 78%, #FFE9F4);
+    opacity: 0;
+    animation: shootBy 14s ease-in infinite;
+}
+
+.shoot--1 {
+    top: 12vh;
+    left: -140px;
+    rotate: 18deg;
+}
+
+.shoot--2 {
+    top: 30vh;
+    left: -140px;
+    rotate: 25deg;
+    animation-duration: 19s;
+    animation-delay: -8s;
+}
+
+@keyframes shootBy {
+    0%,
+    82%   { transform: translate(0, 0); opacity: 0; }
+    85%   { opacity: 0.9; }
+    97%   { opacity: 0.9; }
+    100%  { transform: translate(78vw, 30vh); opacity: 0; }
+}
+
 /* ---------- Tiêu đề ---------- */
 .title-section {
     position: relative;
@@ -860,6 +985,14 @@ body {
 
 /* ---------- Điện thoại: bớt animation chạy liên tục cho đỡ lag ---------- */
 @media (max-width: 640px) {
+    /* Hai bên màn hình hẹp đã kín cây rồi → chỉ giữ vài chiếc đèn cho có không khí */
+    .constel,
+    .shoot,
+    .lantern:nth-of-type(3),
+    .lantern:nth-of-type(6) {
+        display: none;
+    }
+
     /* 100 trái tim đập cùng lúc rất nặng với máy yếu → chỉ giữ cây đung đưa */
     .tree .heart.beat,
     .tree .glitter,

@@ -289,7 +289,7 @@
             order.forEach((i) => board.appendChild(cards[i]));
             if (board.dataset.mode === 'scatter') layoutScatter();
         });
-        foodConfetti({ particleCount: 24, origin: { x: 0.5, y: 0.35 } });
+        foodConfetti({ particleCount: 12, origin: { x: 0.5, y: 0.35 } });
     }
 
     modeButtons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -399,7 +399,7 @@
         lb.hidden = false;
         document.body.classList.add('lb-open', 'nav-locked');
         lb.querySelector('.lb-close').focus();
-        foodConfetti({ particleCount: 16, origin: { x: 0.5, y: 0.45 } });
+        foodConfetti({ particleCount: 8, origin: { x: 0.5, y: 0.45 } });
     }
 
     function closeLightbox() {
@@ -443,11 +443,11 @@
         confetti(Object.assign({
             shapes: foodShapes,
             scalar: 2.2,
-            particleCount: 30,
-            spread: 100,
-            startVelocity: 35,
-            gravity: 0.9,
-            ticks: 220,
+            particleCount: 14,
+            spread: 90,
+            startVelocity: 32,
+            gravity: 1,
+            ticks: 170,
             flat: true,
             zIndex: 9600,
             origin: { x: 0.5, y: 0.5 }
@@ -556,14 +556,14 @@
     if (!reduceMotion) {
         // Trên điện thoại giảm lượng mưa đồ ăn xuống để đỡ lag
         const isMobile = window.innerWidth < 640;
-        const dropCount = isMobile ? 4 : 8;
+        const dropCount = isMobile ? 3 : 6;
         const dropInterval = isMobile ? 1800 : 1100;
 
         for (let i = 0; i < dropCount; i++) dropFood(true);
         setInterval(dropFood, dropInterval);
         setTimeout(() => {
-            foodConfetti({ angle: 60, origin: { x: 0, y: 0.7 } });
-            foodConfetti({ angle: 120, origin: { x: 1, y: 0.7 } });
+            foodConfetti({ particleCount: 9, angle: 60, origin: { x: 0, y: 0.75 } });
+            foodConfetti({ particleCount: 9, angle: 120, origin: { x: 1, y: 0.75 } });
         }, 900);
     }
 
