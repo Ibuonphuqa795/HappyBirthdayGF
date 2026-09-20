@@ -52,14 +52,43 @@
     const preview = safe(() => localStorage.getItem(PREVIEW_KEY) === '1', false)
         || safe(() => sessionStorage.getItem(PREVIEW_KEY) === '1', false);
     const unlocked = safe(() => localStorage.getItem(UNLOCK_KEY) === '1', false);
-    if (preview || unlocked) return;
 
     const target = new Date(BIRTHDAY).getTime();
     const waiting = COUNTDOWN_ON && Date.now() < target;
-    if (!waiting && !QUESTION_ON) return; // không có màn khoá nào cần hiện
+    const conKhoa = waiting || QUESTION_ON; // nếu không xem trước thì màn khoá sẽ chặn
 
     const page = location.pathname.split('/').pop() || 'index.html';
     const isHome = page === 'index.html' || page === '';
+
+    /* Đang bật xem trước mà màn khoá lẽ ra vẫn chặn → hiện một cái huy hiệu nhỏ để
+       biết ngay là mình đang đi cửa sau, bấm một cái là khoá lại. Không có nó thì vào
+       trang thấy mở toang, dễ tưởng đếm ngược bị hỏng. */
+    function hienHuyHieuXemTruoc() {
+        const dung = () => {
+            if (document.querySelector('.preview-badge')) return;
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'preview-badge';
+            b.innerHTML = '👀 Đang xem trước <b>· Khoá lại</b>';
+            b.title = 'Bạn đang bỏ qua màn đếm ngược. Bấm để khoá lại và xem đúng thứ Quỳnh sẽ thấy.';
+            b.addEventListener('click', () => {
+                safe(() => localStorage.removeItem(PREVIEW_KEY));
+                safe(() => sessionStorage.removeItem(PREVIEW_KEY));
+                safe(() => localStorage.removeItem(UNLOCK_KEY));
+                location.replace(location.pathname);
+            });
+            document.body.appendChild(b);
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', dung);
+        else dung();
+    }
+
+    if (preview) {
+        if (conKhoa && isHome) hienHuyHieuXemTruoc();
+        return;
+    }
+    if (unlocked) return;
+    if (!conKhoa) return; // không có màn khoá nào cần hiện
 
     // Trang khác mà chưa mở khoá → quay về trang đầu
     if (!isHome) {
