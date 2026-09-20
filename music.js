@@ -10,7 +10,7 @@
        ======================================================= */
     const YOUTUBE_ID = 'h53q6iIORhw';
     const YOUTUBE_TITLE = 'Happy Birthday to You (Always 14) · AMEE x Hoàng Dũng x Obito x Hứa Kim Tuyền';
-    const MUSIC_SRC = ''; // vd: 'sounds/nhac-nen.mp3'
+    const MUSIC_SRC = 'sounds/happy-birthday.mp3'; // file nhạc tải lên cho điện thoại
     /* LƯU Ý iPhone/iPad: iOS bắt trình phát YouTube ẩn phải mở toàn màn hình, nên trên
        iOS trang KHÔNG dùng YouTube nữa (xem isIOS ở dưới). Muốn iPhone cũng nghe đúng
        bài hát: chép file mp3 vào dự án rồi điền đường dẫn vào MUSIC_SRC ở trên —
