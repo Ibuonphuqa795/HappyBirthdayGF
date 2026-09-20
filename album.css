@@ -144,35 +144,22 @@ h1 {
 .conveyor {
     position: relative;
     width: min(920px, 100%);
-    height: 70px;
+    height: 76px;
     margin: 1.6rem auto 1.5rem;
     overflow: hidden;
     border: 3px solid #fff;
     border-radius: 999px;
-    background: linear-gradient(180deg, #FFEAF1, #FFC8D8);
-    box-shadow: inset 0 -7px 0 rgba(232, 104, 146, 0.22), var(--shadow-soft);
+    /* Vệt sáng mỏng vắt ngang phía trên cho dải băng trông tròn và bóng.
+       Tất cả đều là gradient tĩnh — tô một lần rồi thôi. */
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.12) 42%, rgba(255, 255, 255, 0) 56%),
+        linear-gradient(180deg, #FFF4F8 0%, #FFDDE9 54%, #FFC7DA 100%);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -12px 18px -8px rgba(232, 104, 146, 0.3),
+        var(--shadow-soft);
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-
-/* Vạch băng chuyền chạy */
-/* Vạch băng chuyền chạy bằng `transform` chứ không phải `background-position`:
-   background-position phải tô lại cả dải băng chuyền ở mỗi khung hình (chạy hoài,
-   kể cả khi đã cuộn qua chỗ khác), còn transform thì chỉ trượt một lớp có sẵn. */
-.conveyor::after {
-    content: '';
-    position: absolute;
-    left: -22px;
-    width: calc(100% + 44px);
-    bottom: 5px;
-    height: 6px;
-    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0 10px, transparent 10px 22px);
-    animation: beltMove 0.9s linear infinite;
-}
-
-@keyframes beltMove {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-22px); }
 }
 
 .conveyor__track {
@@ -193,12 +180,16 @@ h1 {
 .plate {
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
-    margin-right: 18px;
+    width: 54px;
+    height: 54px;
+    margin-right: 20px;
     border-radius: 50%;
-    background: radial-gradient(circle, #fff 52%, #FFE3EC 53% 62%, #fff 63%);
-    box-shadow: 0 3px 6px rgba(201, 76, 119, 0.22);
+    background:
+        linear-gradient(170deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 58%),
+        radial-gradient(circle, #fff 53%, #FFE7EF 54% 64%, #fff 65%);
+    box-shadow:
+        0 4px 9px -3px rgba(201, 76, 119, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.9);
 }
 
 .plate i {
@@ -720,7 +711,7 @@ h1 {
 
 @media (max-width: 640px) {
     .album-header { padding-top: 2.4rem; }
-    .conveyor { height: 60px; }
+    .conveyor { height: 64px; }
     .plate { width: 44px; height: 44px; margin-right: 14px; }
     .plate i { font-size: 1.4rem; }
 
@@ -743,9 +734,7 @@ h1 {
    Băng chuyền nằm ở đầu trang: cuộn xuống dưới rồi thì không việc gì phải chạy tiếp.
    Mở ảnh to cũng vậy — lúc đó cả màn hình bị lớp tối che rồi. */
 .conveyor.is-idle .conveyor__track,
-.conveyor.is-idle::after,
 body.lb-open .conveyor__track,
-body.lb-open .conveyor::after,
 body.lb-open .food-drop {
     animation-play-state: paused;
 }
