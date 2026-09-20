@@ -452,19 +452,24 @@ body {
     100% { transform: scale(2.4); opacity: 0; }
 }
 
-/* Tim rơi lả tả */
+/* Tim rơi lả tả — chậm rãi, liền một mạch từ trên xuống.
+   Trước đây keyframes có thêm mốc 50% và dùng `ease-in`: CSS áp lại đường cong tốc độ
+   cho TỪNG chặng chứ không phải cho cả quãng rơi, nên xuống tới giữa chừng vận tốc
+   tụt đột ngột rồi mới nhanh lại → đúng cái "khựng một nhịp" nhìn thấy được.
+   Nay `transform` chỉ khai báo ở 0% và 100% (mốc ở giữa chỉ chỉnh độ mờ, không đụng
+   tới chuyển động) nên cả quãng rơi là MỘT chặng duy nhất, tốc độ đều tăm tắp —
+   Safari trên iPhone giữ nguyên được lớp đã vẽ và chỉ việc trượt nó xuống. */
 .tree .petal {
     opacity: 0;
-    animation: petalFall var(--t, 6s) ease-in infinite;
+    animation: petalFall calc(var(--t, 6s) * 2.4) linear infinite;
     animation-delay: var(--d, 4s);
 }
 
 @keyframes petalFall {
     0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-    10%  { opacity: 1; }
-    50%  { transform: translate(calc(var(--dx) * 0.6), 80px) rotate(160deg); }
-    85%  { opacity: 0.9; }
-    100% { transform: translate(var(--dx), 170px) rotate(320deg); opacity: 0; }
+    12%  { opacity: 0.95; }
+    78%  { opacity: 0.8; }
+    100% { transform: translate(var(--dx), 170px) rotate(240deg); opacity: 0; }
 }
 
 /* Lấp lánh xuất hiện khi cây đã nở */
@@ -961,12 +966,8 @@ body {
 
     /* 100 trái tim đập cùng lúc rất nặng với máy yếu → chỉ giữ cây đung đưa */
     .tree .heart.beat,
-    .tree .glitter,
-    .tree .petal {
+    .tree .glitter {
         animation: none;
-    }
-    .tree .petal {
-        display: none;
     }
     .tree {
         filter: drop-shadow(0 0 18px rgba(255, 168, 194, 0.45));
