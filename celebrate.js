@@ -1,6 +1,7 @@
 // Hiệu ứng chúc mừng sinh nhật (trang 1): băng rôn, bong bóng bay, bánh kem thổi nến, pháo giấy
 (() => {
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isPhone = matchMedia('(max-width: 640px)').matches; // điện thoại → bớt hiệu ứng cho đỡ lag
     const PASTEL = ['#FF8FB1', '#FFC8D8', '#FFB38A', '#FFE08A', '#C9B2FF', '#BDF0E0', '#ffffff'];
     const BALLOON_COLORS = ['#FF8FB1', '#FFB3C9', '#C9B2FF', '#FFD08A', '#9FE3CF', '#FFA98F', '#F46E97'];
 
@@ -22,7 +23,7 @@
 
     /* ---------- Bong bóng bay ---------- */
     document.querySelectorAll('.balloons[data-count]').forEach((box) => {
-        const count = Number(box.dataset.count) || 6;
+        const count = Math.min(Number(box.dataset.count) || 6, isPhone ? 5 : 99);
         for (let i = 0; i < count; i++) {
             const b = document.createElement('span');
             b.className = 'balloon';
@@ -106,13 +107,13 @@
         flash(x, y, colors[0], size);
         // Vòng nổ chính
         confetti({
-            particleCount: Math.round(60 * size), spread: 360, startVelocity: 24 * size,
+            particleCount: Math.round((isPhone ? 34 : 60) * size), spread: 360, startVelocity: 24 * size,
             decay: 0.91, gravity: 0.55, ticks: 110, scalar: 1.05,
             shapes: sparkShapes, colors, origin, zIndex: 10000
         });
         // Lớp kim tuyến nhỏ li ti lấp lánh
         confetti({
-            particleCount: Math.round(40 * size), spread: 360, startVelocity: 14 * size,
+            particleCount: Math.round((isPhone ? 18 : 40) * size), spread: 360, startVelocity: 14 * size,
             decay: 0.9, gravity: 0.35, ticks: 160, scalar: 0.55,
             shapes: ['circle'], colors: ['#ffffff', '#FFF1B8', colors[0]], origin, zIndex: 10000
         });
@@ -142,7 +143,7 @@
     }
 
     // Màn pháo hoa mở màn: các quả pháo lần lượt bay lên và nổ khắp màn hình
-    function fireworksShow(duration = 5200) {
+    function fireworksShow(duration = (isPhone ? 3600 : 5200)) {
         if (!hasConfetti) return;
         const end = Date.now() + duration;
         const shoot = () => {

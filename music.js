@@ -10,7 +10,11 @@
        ======================================================= */
     const YOUTUBE_ID = 'h53q6iIORhw';
     const YOUTUBE_TITLE = 'Happy Birthday to You (Always 14) · AMEE x Hoàng Dũng x Obito x Hứa Kim Tuyền';
-    const MUSIC_SRC = '';
+    const MUSIC_SRC = ''; // vd: 'sounds/nhac-nen.mp3'
+    /* LƯU Ý iPhone/iPad: iOS bắt trình phát YouTube ẩn phải mở toàn màn hình, nên trên
+       iOS trang KHÔNG dùng YouTube nữa (xem isIOS ở dưới). Muốn iPhone cũng nghe đúng
+       bài hát: chép file mp3 vào dự án rồi điền đường dẫn vào MUSIC_SRC ở trên —
+       máy tính vẫn phát qua YouTube, iPhone sẽ phát file đó. */
     const VOLUME = 0.55; // âm lượng (0 → 1)
 
     const STATE_KEY = 'qb-music';      // 'on' | 'off' — nhớ lựa chọn khi chuyển trang
@@ -317,8 +321,14 @@
         };
     }
 
+    // iPhone/iPad tự mở trình phát YouTube toàn màn hình khi trang phát video ẩn
+    // → trên iOS dùng thẳng nhạc dự phòng (file nhạc nếu có, không thì giai điệu hộp nhạc)
+    const isIOS = /iP(hone|ad|od)/.test(navigator.platform || '') ||
+        (navigator.userAgent.includes('Mac') && navigator.maxTouchPoints > 1) ||
+        /iPhone|iPad|iPod/.test(navigator.userAgent);
+
     const createFallback = () => (MUSIC_SRC ? createFilePlayer(MUSIC_SRC) : createMusicBox());
-    let player = YOUTUBE_ID
+    let player = (YOUTUBE_ID && !isIOS)
         ? createYouTubePlayer(YOUTUBE_ID, () => {
             // YouTube lỗi → chuyển sang nhạc dự phòng; nếu đang muốn nghe thì phát luôn
             player = createFallback() || player;

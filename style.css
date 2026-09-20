@@ -667,3 +667,11 @@ body.celebrating .balloons {
     h1 { margin-bottom: 1.2rem; }
     .greeting { margin-bottom: 2rem; }
 }
+
+/* Điện thoại: nền chuyển màu 400% phải vẽ lại cả màn hình mỗi khung hình → đứng yên cho mượt */
+@media (max-width: 640px) {
+    body {
+        animation: none;
+        background-size: 100% 100%;
+    }
+}

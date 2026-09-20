@@ -29,6 +29,13 @@ body {
     background-attachment: fixed;
 }
 
+/* iOS vẽ lại nền "dính" mỗi khi cuộn → rất giật; trên điện thoại cho nền cuộn theo trang */
+@media (max-width: 640px) {
+    body {
+        background-attachment: scroll;
+    }
+}
+
 body.lb-open {
     overflow: hidden;
 }
@@ -324,6 +331,16 @@ h1 {
     object-fit: cover;
     pointer-events: none;
     -webkit-user-drag: none;
+}
+
+/* Ảnh chưa tải (còn data-src) → ẩn đi cho thấy nền hồng, rồi hiện mềm mại khi xong */
+.photo__img img {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+}
+
+.photo__img img[data-src] {
+    opacity: 0;
 }
 
 /* Ảnh mẫu khi chưa có ảnh thật */

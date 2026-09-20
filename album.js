@@ -65,12 +65,12 @@
        sẽ hiện khung hướng dẫn để bạn biết video nằm ở đâu.
        ======================================================= */
     const VIDEOS = [
-        { src: 'IMG_0394.mov', caption: 'Khoảnh khắc đáng yêu 💖' },
-        { src: 'IMG_0428.mov', caption: 'Bên nhau mãi nhé 🌸' },
-        { src: 'IMG_0435.mov', caption: 'Kỷ niệm khó quên ✨' },
-        { src: 'IMG_2612.mov', caption: 'Nụ cười toả nắng ☀️' },
-        { src: 'IMG_6262.mov', caption: 'Chuyện tụi mình 🧸' },
-        { src: 'IMG_6291.mov', caption: 'Happy Birthday Quỳnh Bếuu 🎂' }
+        { src: 'album/videos/01.mp4', poster: 'album/videos/01.jpg', caption: 'Đỉnh đồi lộng gió ⛰️' },
+        { src: 'album/videos/02.mp4', poster: 'album/videos/02.jpg', caption: 'Em giữa rừng xanh 🌿' },
+        { src: 'album/videos/03.mp4', poster: 'album/videos/03.jpg', caption: 'Phượt cùng nhau 🏍️' },
+        { src: 'album/videos/04.mp4', poster: 'album/videos/04.jpg', caption: 'Ngắm mây trên máy bay ✈️' },
+        { src: 'album/videos/05.mp4', poster: 'album/videos/05.jpg', caption: 'Đi chơi đêm đông vui 🌃' },
+        { src: 'album/videos/06.mp4', poster: 'album/videos/06.jpg', caption: 'Đường về trong đêm 🌙' }
     ];
 
     const FOODS = ['🍰', '🍩', '🍓', '🧋', '🍡', '🍪', '🍫', '🍦', '🍭', '🍬', '🧁', '🍮', '🍕', '🍔',
@@ -101,7 +101,45 @@
             '<span class="ph-text">ảnh sắp có 💗</span>';
     }
 
-    function fillPhoto(frame, item, i) {
+    // Ô album dùng ảnh thu nhỏ (nhẹ cho điện thoại); xem ảnh to mới tải ảnh lớn
+    const thumbOf = (src) => src.replace('album/', 'album/thumbs/');
+
+    // Chỉ tải ảnh khi sắp cuộn tới, tính theo VỊ TRÍ BỐ CỤC (offsetTop) chứ không theo
+    // vị trí đang vẽ: lúc mở trang các tấm đang bay từ giữa ra nên nhìn thì tấm nào
+    // cũng "trong màn hình", dễ khiến trình duyệt tải hết 46 ảnh một lúc.
+    const lazyQueue = [];
+
+    function pumpLazy() {
+        if (!lazyQueue.length) return;
+        const boardTop = board.offsetTop;
+        // Tải mọi ảnh từ đáy màn hình trở lên (kể cả ảnh đã lướt qua) — cuộn nhanh
+        // cũng không bỏ sót tấm nào
+        const max = window.scrollY + window.innerHeight + 700;
+        for (let i = lazyQueue.length - 1; i >= 0; i--) {
+            const { img, src } = lazyQueue[i];
+            const card = img.closest('.photo');
+            if (!card) continue;
+            if (boardTop + card.offsetTop > max) continue;
+            img.src = src;
+            delete img.dataset.src;
+            lazyQueue.splice(i, 1);
+        }
+    }
+
+    let pumpPending = false;
+    function queuePump() {
+        if (pumpPending) return;
+        pumpPending = true;
+        const run = () => {
+            if (!pumpPending) return;
+            pumpPending = false;
+            pumpLazy();
+        };
+        requestAnimationFrame(run);
+        setTimeout(run, 120); // phòng khi trình duyệt tạm dừng requestAnimationFrame
+    }
+
+    function fillPhoto(frame, item, i, large) {
         frame.innerHTML = '';
         frame.classList.remove('is-placeholder');
         if (!item.src) {
@@ -110,12 +148,19 @@
         }
         const img = new Image();
         img.alt = item.caption || `Ảnh ${i + 1}`;
+        if (!large) img.sizes = '(max-width: 640px) 45vw, 200px';
         img.decoding = 'async';
         img.loading = 'lazy';
         img.draggable = false;
         img.onerror = () => showPlaceholder(frame, i);
-        img.src = item.src;
+        const src = large ? item.src : thumbOf(item.src);
         frame.appendChild(img);
+        if (large) {
+            img.src = src;
+        } else {
+            img.dataset.src = src;
+            lazyQueue.push({ img, src });
+        }
     }
 
     function makeCard(item, i) {
@@ -151,6 +196,9 @@
     cards.forEach((c) => board.appendChild(c));
     let order = cards.map((_, i) => i);
 
+    window.addEventListener('scroll', queuePump, { passive: true });
+    window.addEventListener('resize', queuePump);
+
     /* ---------- Bố cục "rải ảnh" ---------- */
     function layoutScatter() {
         const W = board.clientWidth;
@@ -181,6 +229,7 @@
     function flip(mutate) {
         const first = cards.map((c) => [c.offsetLeft, c.offsetTop]);
         mutate();
+        queuePump();
         cards.forEach((c, i) => {
             const dx = first[i][0] - c.offsetLeft;
             const dy = first[i][1] - c.offsetTop;
@@ -202,7 +251,9 @@
         if (reduceMotion) return;
         const cx = board.clientWidth / 2;
         const cy = Math.min(board.clientHeight / 2, 240);
-        cards.forEach((c, i) => {
+        // Điện thoại: chỉ "chia bài" những tấm đầu nhìn thấy được, tránh 46 animation cùng lúc
+        const limit = matchMedia('(max-width: 640px)').matches ? 8 : cards.length;
+        cards.slice(0, limit).forEach((c, i) => {
             const dx = cx - (c.offsetLeft + c.offsetWidth / 2);
             const dy = cy - (c.offsetTop + c.offsetHeight / 2);
             c.animate(
@@ -332,7 +383,7 @@
 
     function renderLightbox(i, dir) {
         current = (i + items.length) % items.length;
-        fillPhoto(lbPhoto, items[current], current);
+        fillPhoto(lbPhoto, items[current], current, true); // xem to → ảnh lớn
         lbCaption.textContent = items[current].caption || `Kỷ niệm #${current + 1}`;
         lbCount.textContent = `${current + 1} / ${items.length}`;
         if (dir) {
@@ -407,7 +458,7 @@
     const rain = document.querySelector('.food-rain');
 
     function dropFood(prewarm) {
-        if (document.hidden || rain.childElementCount > 22) return;
+        if (document.hidden || rain.childElementCount > (window.innerWidth < 640 ? 8 : 22)) return;
         const el = document.createElement('span');
         el.className = 'food-drop';
         el.textContent = pick(FOODS);
@@ -444,9 +495,12 @@
             const video = document.createElement('video');
             video.controls = true;
             video.playsInline = true;
+            video.setAttribute('playsinline', '');         // iPhone: phát ngay trong trang
+            video.setAttribute('webkit-playsinline', '');   // iOS đời cũ
+            video.setAttribute('controlsList', 'nodownload');
             video.preload = 'none'; // Đổi thành none để không tải trước video, giảm lag
+            if (v.poster) video.poster = v.poster; // ảnh bìa hiện ngay, chưa cần tải video
             video.src = v.src;
-            if (v.poster) video.poster = v.poster;
             // Xem video → nhạc nền tạm dừng; xem xong / dừng → nhạc phát tiếp
             video.addEventListener('play', () => {
                 videoList.querySelectorAll('video').forEach((o) => { if (o !== video) o.pause(); });
@@ -486,6 +540,7 @@
     } else {
         layoutScatter();
     }
+    pumpLazy();
     dealIn();
     if (!reduceMotion) {
         // Trên điện thoại giảm lượng mưa đồ ăn xuống để đỡ lag

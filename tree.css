@@ -858,6 +858,22 @@ body {
     box-shadow: 0 0 8px var(--lav-200), 0 0 16px var(--lav-300);
 }
 
+/* ---------- Điện thoại: bớt animation chạy liên tục cho đỡ lag ---------- */
+@media (max-width: 640px) {
+    /* 100 trái tim đập cùng lúc rất nặng với máy yếu → chỉ giữ cây đung đưa */
+    .tree .heart.beat,
+    .tree .glitter,
+    .tree .petal {
+        animation: none;
+    }
+    .tree .petal {
+        display: none;
+    }
+    .tree {
+        filter: drop-shadow(0 0 18px rgba(255, 168, 194, 0.45));
+    }
+}
+
 @media (max-width: 600px) {
     .stars-bg::before { width: 44px; height: 44px; top: 58vh; right: auto; left: 12vw; }
 }

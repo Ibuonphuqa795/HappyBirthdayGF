@@ -7,8 +7,14 @@
     box-sizing: border-box;
 }
 
+/* Cắt hẳn phần ảnh bay từ ngoài vào (lúc mở trang) để không kéo ngang được */
+html {
+    overflow-x: clip;
+}
+
 body {
     min-height: 100vh;
+    overflow-x: clip;
     background: linear-gradient(135deg, #FFD9E4 0%, var(--lav-100) 25%, #FFF1DC 50%, var(--lav-100) 75%, #FFD9E4 100%);
     background-size: 400% 400%;
     animation: pastelShift 18s ease infinite;
@@ -317,4 +323,12 @@ body {
     .memory-img { height: 240px; }
     .final-message { padding: 3.2rem 1.3rem 2.4rem; }
     .final-message p { font-size: 1rem; line-height: 32px; }
+}
+
+/* Điện thoại: nền chuyển màu 400% phải vẽ lại cả màn hình mỗi khung hình → đứng yên cho mượt */
+@media (max-width: 640px) {
+    body {
+        animation: none;
+        background-size: 100% 100%;
+    }
 }

@@ -722,3 +722,22 @@ body.page-leaving {
     .page-nav__btn { width: 38px; height: 38px; font-size: 1.5rem; }
     .page-nav__dot { width: 32px; height: 32px; font-size: 1rem; }
 }
+
+/* =========================================================
+   ĐIỆN THOẠI — bớt hiệu ứng nặng
+   `backdrop-filter` trên thanh điều hướng cố định khiến iOS phải làm mờ lại
+   cả vùng đó ở MỖI khung hình khi cuộn → giật. Trên màn hình nhỏ đổi sang
+   nền đục, nhìn vẫn y hệt mà mượt hẳn.
+   ========================================================= */
+@media (max-width: 640px) {
+    .page-nav {
+        background: rgba(255, 255, 255, 0.92);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    /* Nút nhạc xoay tròn liên tục cũng là một lớp vẽ lại không cần thiết */
+    .music-btn.is-playing {
+        animation-duration: 6s;
+    }
+}
