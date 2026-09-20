@@ -20,20 +20,24 @@ body {
     font-family: var(--font-body);
     color: var(--cocoa);
     overflow-x: hidden;
-    /* Khăn picnic kẻ caro hồng */
+    background: #FFF7F2;
+}
+
+/* Khăn picnic kẻ caro hồng — để riêng thành một lớp cố định.
+   Trước đây dùng `background-attachment: fixed` trên body: mỗi khung hình khi cuộn
+   trình duyệt phải vẽ lại 3 lớp gradient trên toàn màn hình → giật. Tách ra lớp riêng
+   thì trình duyệt chỉ việc giữ nguyên lớp đó, không vẽ lại gì cả. */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background:
         radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.75), transparent 60%),
         repeating-linear-gradient(0deg, rgba(255, 168, 194, 0.17) 0 28px, transparent 28px 56px),
         repeating-linear-gradient(90deg, rgba(255, 168, 194, 0.17) 0 28px, transparent 28px 56px),
         #FFF7F2;
-    background-attachment: fixed;
-}
-
-/* iOS vẽ lại nền "dính" mỗi khi cuộn → rất giật; trên điện thoại cho nền cuộn theo trang */
-@media (max-width: 640px) {
-    body {
-        background-attachment: scroll;
-    }
 }
 
 body.lb-open {
@@ -55,7 +59,8 @@ body.lb-open {
     left: var(--x);
     font-size: var(--s);
     opacity: 0.8;
-    filter: drop-shadow(0 4px 4px rgba(201, 76, 119, 0.2));
+    /* KHÔNG dùng filter ở đây: filter buộc trình duyệt tô lại từng món ăn ở mỗi khung
+       hình thay vì chỉ trượt lớp có sẵn — hơn 20 món rơi cùng lúc là đủ giật. */
     animation: foodFall var(--d) linear forwards;
 }
 
@@ -132,11 +137,14 @@ h1 {
 }
 
 /* Vạch băng chuyền chạy */
+/* Vạch băng chuyền chạy bằng `transform` chứ không phải `background-position`:
+   background-position phải tô lại cả dải băng chuyền ở mỗi khung hình (chạy hoài,
+   kể cả khi đã cuộn qua chỗ khác), còn transform thì chỉ trượt một lớp có sẵn. */
 .conveyor::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    left: -22px;
+    width: calc(100% + 44px);
     bottom: 5px;
     height: 6px;
     background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0 10px, transparent 10px 22px);
@@ -144,8 +152,8 @@ h1 {
 }
 
 @keyframes beltMove {
-    from { background-position: 0 0; }
-    to   { background-position: -22px 0; }
+    from { transform: translateX(0); }
+    to   { transform: translateX(-22px); }
 }
 
 .conveyor__track {
@@ -710,4 +718,15 @@ h1 {
     }
     .lb-prev { left: calc(50% - 70px); }
     .lb-next { right: calc(50% - 70px); }
+}
+
+/* ---------- Tạm dừng thứ đang chạy khi không ai nhìn ----------
+   Băng chuyền nằm ở đầu trang: cuộn xuống dưới rồi thì không việc gì phải chạy tiếp.
+   Mở ảnh to cũng vậy — lúc đó cả màn hình bị lớp tối che rồi. */
+.conveyor.is-idle .conveyor__track,
+.conveyor.is-idle::after,
+body.lb-open .conveyor__track,
+body.lb-open .conveyor::after,
+body.lb-open .food-drop {
+    animation-play-state: paused;
 }

@@ -70,7 +70,7 @@
         { src: 'album/videos/03.mp4', poster: 'album/videos/03.jpg', caption: 'Phượt cùng nhau 🏍️' },
         { src: 'album/videos/04.mp4', poster: 'album/videos/04.jpg', caption: 'Ngắm mây trên máy bay ✈️' },
         { src: 'album/videos/05.mp4', poster: 'album/videos/05.jpg', caption: 'Đi chơi đêm đông vui 🌃' },
-        { src: 'album/videos/06.mp4', poster: 'album/videos/06.jpg', caption: 'Đường về trong đêm 🌙' }
+        { src: 'album/videos/06.mp4', poster: 'album/videos/06.jpg', caption: 'Đi săn mây bình minh 🌄' }
     ];
 
     const FOODS = ['🍰', '🍩', '🍓', '🧋', '🍡', '🍪', '🍫', '🍦', '🍭', '🍬', '🧁', '🍮', '🍕', '🍔',
@@ -458,7 +458,9 @@
     const rain = document.querySelector('.food-rain');
 
     function dropFood(prewarm) {
-        if (document.hidden || rain.childElementCount > (window.innerWidth < 640 ? 8 : 22)) return;
+        // Càng nhiều món rơi cùng lúc thì trình duyệt càng phải ghép nhiều lớp mỗi khung hình
+        if (document.hidden || document.body.classList.contains('lb-open')) return;
+        if (rain.childElementCount > (window.innerWidth < 640 ? 6 : 12)) return;
         const el = document.createElement('span');
         el.className = 'food-drop';
         el.textContent = pick(FOODS);
@@ -477,6 +479,15 @@
     const belt = FOODS.slice(0, 16);
     document.querySelector('.conveyor__track').innerHTML =
         [...belt, ...belt].map((f) => `<span class="plate"><i>${f}</i></span>`).join('');
+
+    // Cuộn qua khỏi băng chuyền thì cho nó nghỉ (đỡ tốn một lớp chạy hoài ở nền)
+    const conveyor = document.querySelector('.conveyor');
+    if (conveyor && 'IntersectionObserver' in window) {
+        new IntersectionObserver(
+            ([entry]) => conveyor.classList.toggle('is-idle', !entry.isIntersecting),
+            { rootMargin: '120px 0px' }
+        ).observe(conveyor);
+    }
 
     /* ---------- Video ---------- */
     const videoSection = document.querySelector('.video-moment');
@@ -545,8 +556,8 @@
     if (!reduceMotion) {
         // Trên điện thoại giảm lượng mưa đồ ăn xuống để đỡ lag
         const isMobile = window.innerWidth < 640;
-        const dropCount = isMobile ? 4 : 10;
-        const dropInterval = isMobile ? 1500 : 700;
+        const dropCount = isMobile ? 4 : 8;
+        const dropInterval = isMobile ? 1800 : 1100;
 
         for (let i = 0; i < dropCount; i++) dropFood(true);
         setInterval(dropFood, dropInterval);
