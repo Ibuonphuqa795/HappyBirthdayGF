@@ -182,8 +182,12 @@
         const gate = build();
         const countdown = gate.querySelector('.gate-view--countdown');
         const question = gate.querySelector('.gate-view--question');
-        const input = gate.querySelector('.gate-input');
-        const msg = gate.querySelector('.gate-msg');
+        /* Phải trỏ đúng ô của khung câu hỏi. Dùng '.gate-input'/'.gate-msg' chung chung thì
+           querySelector bắt trúng ô mật khẩu xem trước (#gate-peek-input) vì nó nằm trước
+           trong DOM → bấm "Mở khoá" luôn đọc ô rỗng, báo "Em nhập câu trả lời đã nha"
+           và không bao giờ mở được, gõ đáp án đúng cũng chịu. */
+        const input = gate.querySelector('#gate-answer');
+        const msg = question.querySelector('.gate-msg');
         const card = gate.querySelector('.gate-card');
         let tries = 0;
 
