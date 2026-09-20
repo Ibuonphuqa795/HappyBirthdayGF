@@ -176,39 +176,6 @@ body {
     to   { opacity: 0.95; }
 }
 
-/* 🌠 Sao băng — hiện thoáng qua rồi biến mất */
-.shoot {
-    position: absolute;
-    width: 120px;
-    height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 78%, #FFE9F4);
-    opacity: 0;
-    animation: shootBy 14s ease-in infinite;
-}
-
-.shoot--1 {
-    top: 12vh;
-    left: -140px;
-    rotate: 18deg;
-}
-
-.shoot--2 {
-    top: 30vh;
-    left: -140px;
-    rotate: 25deg;
-    animation-duration: 19s;
-    animation-delay: -8s;
-}
-
-@keyframes shootBy {
-    0%,
-    82%   { transform: translate(0, 0); opacity: 0; }
-    85%   { opacity: 0.9; }
-    97%   { opacity: 0.9; }
-    100%  { transform: translate(78vw, 30vh); opacity: 0; }
-}
-
 /* ---------- Tiêu đề ---------- */
 .title-section {
     position: relative;
@@ -987,7 +954,6 @@ body {
 @media (max-width: 640px) {
     /* Hai bên màn hình hẹp đã kín cây rồi → chỉ giữ vài chiếc đèn cho có không khí */
     .constel,
-    .shoot,
     .lantern:nth-of-type(3),
     .lantern:nth-of-type(6) {
         display: none;
