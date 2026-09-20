@@ -45,6 +45,9 @@
         if (!PAGES.includes(file)) return;  // trang lạ → không ghi lên thanh địa chỉ
         history.replaceState(null, '', location.pathname + location.search + '#p=' + encodeURIComponent(file));
         document.title = win.document.title || homeTitle;
+        // Đánh dấu trang con đang mở để trang chủ tự chỉnh mấy thứ nổi bên trên khung
+        // (vd: huy hiệu "đang xem trước" phải né thanh điều hướng của từng trang)
+        document.body.dataset.page = file;
     }
 
     function go(file) {
@@ -74,6 +77,7 @@
             frame.remove();
             frame = null;
         }
+        delete document.body.dataset.page;
         const body = document.body;
         body.classList.remove('shell-framed', 'page-leaving');
         body.style.opacity = '1';

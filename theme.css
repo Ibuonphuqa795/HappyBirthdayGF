@@ -759,11 +759,16 @@ body.page-leaving {
     transform: scale(1.06);
 }
 
+/* Trang cây ước nguyện để thanh chuyển trang ở TRÊN → đẩy huy hiệu xuống dưới nó.
+   Huy hiệu nằm ở trang chủ nên phải viết ở đây, tree.css không với tới được. */
+body[data-page="tree.html"] .preview-badge {
+    top: 76px;
+}
+
+/* Trên điện thoại chỉ thu nhỏ lại, KHÔNG dời xuống đáy: thanh chuyển trang nằm
+   ở đáy và kéo gần hết bề ngang, huy hiệu sẽ đè lên nút nhạc. */
 @media (max-width: 480px) {
     .preview-badge {
-        top: auto;
-        bottom: 12px;
-        right: 12px;
         padding: 6px 12px;
         font-size: 0.72rem;
     }
