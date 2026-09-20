@@ -103,6 +103,7 @@
 
     /* ---------- 🎂 Màn kết thúc ---------- */
     const ending = document.querySelector('.ending');
+    let endingTimers = [];
 
     function heartRain() {
         if (typeof window.confetti !== 'function') return;
@@ -116,7 +117,26 @@
             confetti({ particleCount: 3, angle: 120, spread: 60, origin: { x: 1, y: 0.7 }, shapes: [heart, 'circle'], colors, scalar: 1.3, zIndex: 300 });
             if (Date.now() < end) requestAnimationFrame(frame);
         })();
+        // Tiếng "bụp" gọi NGAY SÁT lệnh bắn pháo giấy thì tiếng với hình mới cùng một nhịp
+        if (window.QBSfx) window.QBSfx.firework(0.9);
         confetti({ particleCount: 90, spread: 110, startVelocity: 38, origin: { x: 0.5, y: 0.45 }, shapes: [heart], colors, scalar: 1.6, zIndex: 300 });
+
+        // Thêm mấy cú nổ nhỏ rải rác cho rôm rả, nhỏ dần rồi tắt.
+        // Mỗi tiếng đều đi kèm một chùm tim bung ra đúng chỗ đó, không để tiếng nổ suông.
+        [
+            { t: 620,  x: 0.24, y: 0.36, v: 0.62 },
+            { t: 1260, x: 0.76, y: 0.3,  v: 0.54 },
+            { t: 1900, x: 0.5,  y: 0.24, v: 0.46 }
+        ].forEach(({ t, x, y, v }) => {
+            endingTimers.push(setTimeout(() => {
+                if (window.QBSfx) window.QBSfx.firework(v);
+                confetti({
+                    particleCount: 26, spread: 360, startVelocity: 17, decay: 0.9, gravity: 0.5,
+                    ticks: 100, scalar: 1.1, shapes: [heart, 'circle'], colors,
+                    origin: { x, y }, zIndex: 300
+                });
+            }, t));
+        });
     }
 
     function showEnding() {
@@ -128,6 +148,9 @@
     }
 
     function hideEnding() {
+        // Tắt màn kết sớm thì đừng để mấy tiếng nổ đã hẹn giờ nổ tiếp trong im lặng
+        endingTimers.forEach(clearTimeout);
+        endingTimers = [];
         ending.hidden = true;
         document.body.classList.remove('ending-open');
         // Ẩn luôn modal "Đã Gửi Thành Công!" để người dùng ngắm cây trọn vẹn
