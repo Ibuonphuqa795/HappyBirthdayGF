@@ -97,8 +97,8 @@
         overlay.hidden = true;
         document.body.classList.remove('letter-open');
         openBtn.focus();
-        // Đọc hết thư rồi mới cất → hiện màn kết thúc
-        if (finished) setTimeout(showEnding, 350);
+        // Cất thư là hiện màn kết thúc (không cần đợi chữ gõ xong)
+        setTimeout(showEnding, 350);
     }
 
     /* ---------- 🎂 Màn kết thúc ---------- */

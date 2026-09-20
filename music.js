@@ -15,7 +15,7 @@
        iOS trang KHÔNG dùng YouTube nữa (xem isIOS ở dưới). Muốn iPhone cũng nghe đúng
        bài hát: chép file mp3 vào dự án rồi điền đường dẫn vào MUSIC_SRC ở trên —
        máy tính vẫn phát qua YouTube, iPhone sẽ phát file đó. */
-    const VOLUME = 0.55; // âm lượng (0 → 1)
+    const VOLUME = 0.35; // âm lượng (0 → 1) - giảm xuống để đỡ giật mình
 
     const STATE_KEY = 'qb-music';      // 'on' | 'off' — nhớ lựa chọn khi chuyển trang
     const TIME_KEY = 'qb-music-time';  // vị trí bài hát, để tải lại trang vẫn hát tiếp
