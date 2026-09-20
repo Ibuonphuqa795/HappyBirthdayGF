@@ -52,7 +52,11 @@
         { src: 'album/43.jpg', caption: 'Khăn choàng xinh xinh 🧣' },
         { src: 'album/44.jpg', caption: 'Rừng thông mát lạnh 🌲' },
         { src: 'album/45.jpg', caption: 'Hai đứa mình 💑' },
-        { src: 'album/46.jpg', caption: 'Kỷ niệm nhỏ xinh 💗' }
+        { src: 'album/46.jpg', caption: 'Kỷ niệm nhỏ xinh 💗' },
+        { src: 'album/47.jpg', caption: 'Hẹn hò đi xem phim 🎬' },
+        { src: 'album/48.jpg', caption: 'Rủ nhau diện Crocs trắng 🤍' },
+        { src: 'album/49.jpg', caption: 'Hai đứa cùng tô tượng 🎨' },
+        { src: 'album/50.jpg', caption: 'Hộp tai nghe đôi 🎧' }
     ];
     const PLACEHOLDER_COUNT = 18;
 
@@ -457,8 +461,12 @@
             particleCount: 14,
             spread: 90,
             startVelocity: 32,
-            gravity: 1,
-            ticks: 170,
+            // `ticks` là TUỔI THỌ của hạt: hết tuổi là nó mờ dần rồi biến mất, dù đang
+            // ở đâu. Để thấp quá thì hạt bắn lên từ mép dưới sẽ tắt ngay giữa màn hình,
+            // trông như bị lỗi. Cho sống đủ lâu + rơi nhanh hơn để nó khuất khỏi màn
+            // hình rồi mới hết tuổi.
+            gravity: 1.5,
+            ticks: 280,
             flat: true,
             zIndex: 9600,
             origin: { x: 0.5, y: 0.5 }
@@ -584,8 +592,9 @@
         for (let i = 0; i < dropCount; i++) dropFood(true);
         setInterval(dropFood, dropInterval);
         setTimeout(() => {
-            foodConfetti({ particleCount: 9, angle: 60, origin: { x: 0, y: 0.75 } });
-            foodConfetti({ particleCount: 9, angle: 120, origin: { x: 1, y: 0.75 } });
+            // Bắn chếch lên từ hai góc dưới rồi rơi ra khỏi mép dưới màn hình
+            foodConfetti({ particleCount: 9, angle: 62, startVelocity: 46, origin: { x: 0, y: 0.98 } });
+            foodConfetti({ particleCount: 9, angle: 118, startVelocity: 46, origin: { x: 1, y: 0.98 } });
         }, 900);
     }
 
