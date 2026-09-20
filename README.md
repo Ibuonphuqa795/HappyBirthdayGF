@@ -39,11 +39,15 @@ Muốn vào xem/sửa mà không phải chờ:
 
 | Mở địa chỉ | Kết quả |
 |---|---|
-| `…/index.html?xem-truoc` | Bỏ qua màn khoá. **Máy này nhớ luôn** — mở tab mới hay tắt trình duyệt vào lại vẫn xem được |
+| Nút 🔑 **"Lối tắt cho chủ nhân món quà"** ngay dưới đồng hồ | Nhập mật khẩu (chính là **ngày sinh nhật**, gõ `21/9`) là vào xem được |
+| `…/index.html?xem-truoc` | Bỏ qua màn khoá luôn, khỏi nhập gì |
 | `…/index.html?khoa-lai` | Tắt chế độ xem trước, quay lại đúng thứ Quỳnh sẽ thấy |
 
-Chỉ cần mở `?xem-truoc` **một lần**. Cửa sổ ẩn danh thì luôn thấy màn khoá, tiện để
-kiểm tra lại.
+Cả hai cách đều **được máy nhớ luôn** — mở tab mới hay tắt trình duyệt vào lại vẫn xem được.
+
+**Nếu không thấy đồng hồ đếm ngược:** máy bạn còn nhớ "đã mở khoá" từ những lần vào
+trước (`qb-unlocked` trong `localStorage`). Mở `?khoa-lai` là xoá sạch, đếm ngược hiện lại.
+Cửa sổ ẩn danh cũng luôn thấy màn khoá, tiện để kiểm tra.
 
 ### 🔒 Nhớ làm trước khi gửi link
 

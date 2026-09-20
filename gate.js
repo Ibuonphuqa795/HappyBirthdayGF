@@ -22,6 +22,8 @@
          Máy này sẽ nhớ luôn, mở tab mới hay tắt trình duyệt vào lại vẫn xem được.
        - Muốn xem lại đúng thứ Quỳnh sẽ thấy: mở  index.html?khoa-lai
          (hoặc mở cửa sổ ẩn danh)
+       - Ngay dưới đồng hồ đếm ngược cũng có nút "Lối tắt cho chủ nhân món quà":
+         nhập mật khẩu (chính là ANSWERS bên dưới — ngày sinh nhật) là xem trước được.
        ======================================================= */
     const BIRTHDAY = '2026-09-21T00:00:00+07:00';
     const QUESTION = 'Sinh nhật của em là ngày nào nè? 🎂';
@@ -91,6 +93,13 @@
                         <div class="tick"><b data-unit="s">00</b><span>giây</span></div>
                     </div>
                     <p class="gate-note">Đúng 00:00 ngày 21/9 hộp quà sẽ tự mở khoá nha 🔐</p>
+                    <button type="button" class="gate-peek-btn">🔑 Lối tắt cho chủ nhân món quà</button>
+                    <form class="gate-peek" hidden>
+                        <label class="gate-peek__label" for="gate-peek-input">Nhập mật khẩu để xem trước nè:</label>
+                        <input id="gate-peek-input" class="gate-input gate-input--sm" type="password" autocomplete="off" placeholder="mật khẩu…">
+                        <p class="gate-msg gate-msg--peek" aria-live="polite"></p>
+                        <button type="submit" class="candy candy--lav jelly gate-peek__go">Xem trước 👀</button>
+                    </form>
                 </div>
                 <form class="gate-view gate-view--question" hidden>
                     <div class="gate-emoji" aria-hidden="true">🔐</div>
@@ -113,6 +122,46 @@
         const msg = gate.querySelector('.gate-msg');
         const card = gate.querySelector('.gate-card');
         let tries = 0;
+
+        /* ---------- Lối tắt: nhập mật khẩu (chính là ngày sinh nhật) để xem trước ----------
+           Dùng chung bộ đáp án với câu hỏi bí mật nên gõ 21/9, 21-9, 21.9… đều được. */
+        const peekBtn = gate.querySelector('.gate-peek-btn');
+        const peekForm = gate.querySelector('.gate-peek');
+        const peekInput = gate.querySelector('#gate-peek-input');
+        const peekMsg = gate.querySelector('.gate-msg--peek');
+        let peekTries = 0;
+
+        peekBtn.addEventListener('click', () => {
+            peekBtn.hidden = true;
+            peekForm.hidden = false;
+            setTimeout(() => peekInput.focus(), 50);
+        });
+
+        peekForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = normalize(peekInput.value);
+            if (!pass) {
+                peekMsg.textContent = 'Nhập mật khẩu đã nha 🥺';
+                return;
+            }
+            if (accepted.has(pass)) {
+                // Nhớ lại máy này, lần sau vào thẳng khỏi phải nhập nữa
+                safe(() => localStorage.setItem(PREVIEW_KEY, '1'));
+                peekMsg.textContent = 'Đúng rồi, vào xem thôi 🎉';
+                gate.classList.add('gate--open');
+                document.documentElement.classList.remove('gate-locked');
+                setTimeout(() => gate.remove(), 700);
+                return;
+            }
+            peekTries++;
+            peekMsg.textContent = peekTries >= 2
+                ? 'Gợi ý: là ngày sinh nhật đó, kiểu ngày/tháng 🎂'
+                : 'Sai mật khẩu rồi 🥺';
+            card.classList.remove('shake');
+            void card.offsetWidth;
+            card.classList.add('shake');
+            peekInput.select();
+        });
 
         function celebrate() {
             if (typeof window.confetti !== 'function') return;

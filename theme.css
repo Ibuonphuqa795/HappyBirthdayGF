@@ -472,6 +472,7 @@ html.gate-locked body > *:not(.gate) {
 
 .gate-timer {
     display: flex;
+    flex-wrap: wrap; /* màn hình rất hẹp thì xuống thành 2 hàng, không bị tràn mất chữ "giây" */
     justify-content: center;
     gap: 10px;
     margin-top: 22px;
@@ -553,6 +554,7 @@ html.gate-locked body > *:not(.gate) {
 @media (max-width: 420px) {
     .tick { width: 64px; }
     .tick b { font-size: 1.6rem; }
+    .gate-timer { gap: 8px; }
 }
 
 /* ---------- 🎵 Nút nhạc (music.js) ---------- */
@@ -721,6 +723,71 @@ body.page-leaving {
     }
     .page-nav__btn { width: 38px; height: 38px; font-size: 1.5rem; }
     .page-nav__dot { width: 32px; height: 32px; font-size: 1rem; }
+}
+
+/* ---------- Lối tắt xem trước dưới đồng hồ đếm ngược ---------- */
+.gate-peek-btn {
+    margin-top: 18px;
+    padding: 7px 16px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--lav-500);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1.5px dashed var(--lav-300);
+    border-radius: 999px;
+    cursor: var(--cursor-heart-hover) 17 17, pointer;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gate-peek-btn:hover,
+.gate-peek-btn:focus-visible {
+    color: #fff;
+    background: var(--lav-400, #9D7FE8);
+    border-style: solid;
+    transform: scale(1.05);
+}
+
+/* `display: flex` sẽ THẮNG thuộc tính `hidden` của HTML (vốn chỉ là display:none của
+   trình duyệt), nên phải nói rõ lại — không thì form mật khẩu hiện sẵn từ đầu. */
+.gate-peek[hidden],
+.gate-peek-btn[hidden] {
+    display: none;
+}
+
+.gate-peek {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    margin-top: 16px;
+    padding-top: 15px;
+    border-top: 1.5px dashed var(--lav-200);
+}
+
+.gate-peek__label {
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--cocoa-soft);
+}
+
+.gate-input--sm {
+    max-width: 240px;
+    padding: 9px 16px;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.gate-peek__go {
+    font-size: 0.9rem;
+    padding: 0.55em 1.3em 0.5em;
+}
+
+.gate-msg--peek {
+    min-height: 1.1em;
+    margin: 0;
+    font-size: 0.86rem;
 }
 
 /* =========================================================
