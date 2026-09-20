@@ -20,7 +20,14 @@ function typeGreeting() {
 
 // Create floating elements
 const floatingElements = ['💖', '✨', '🌸', '💫', '💕', '🍰', '🍩', '🍫', '🍬', '🍭', '🍓', '🍔', '🍕', '🍡', '🧋', '🎂'];
+const TOI_DA_BAY = 16;        // số món bay cùng lúc — giữ đúng mật độ cũ, đỡ nặng máy
+const TOC_DO_BAY = [55, 100];  // px mỗi giây, như nhịp bay cũ
+
 function createFloating() {
+    // Tab bị ẩn hoặc đang mở trang con trong khung → đừng đẻ thêm cho tốn pin điện thoại
+    if (document.hidden || document.body.classList.contains('shell-framed')) return;
+    if (document.querySelectorAll('.floating').length >= TOI_DA_BAY) return;
+
     const element = document.createElement('div');
     element.className = 'floating';
     element.textContent = floatingElements[Math.floor(Math.random() * floatingElements.length)];
@@ -29,12 +36,19 @@ function createFloating() {
     element.style.fontSize = (Math.random() * 20 + 20) + 'px';
     document.body.appendChild(element);
 
+    /* Quãng đường phải tính từ chỗ món ăn đang đứng, để nó bay vượt hẳn mép trên rồi mới
+       biến mất. Trước đây luôn bay đúng 500px: màn hình điện thoại cao hơn 500px nên món
+       nào sinh ra ở nửa dưới là tắt ngóm ngay giữa màn hình, lúc đang rõ mồn một.
+       Giữ tốc độ cố định (px/giây) nên đường bay vẫn đều như cũ, chỉ dài hơn cho đủ đường. */
+    const quangDuong = element.getBoundingClientRect().bottom + 80;
+    const tocDo = Math.random() * (TOC_DO_BAY[1] - TOC_DO_BAY[0]) + TOC_DO_BAY[0];
+
+    gsap.to(element, { opacity: 1, duration: 1.5, ease: "none" });
     gsap.to(element, {
-        y: -500,
+        y: -quangDuong,
         x: Math.random() * 100 - 50,
         rotation: Math.random() * 360,
-        duration: Math.random() * 5 + 5,
-        opacity: 1,
+        duration: quangDuong / tocDo,
         ease: "none",
         onComplete: () => element.remove()
     });
