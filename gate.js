@@ -104,6 +104,41 @@
     const accepted = new Set(ANSWERS.map(normalize));
     const pad = (n) => String(n).padStart(2, '0');
 
+    /* ---------- Chấm đáp án kiểu "dễ tính" ----------
+       Trước đây chỉ khớp đúng y hệt danh sách ANSWERS nên gõ mỗi "21" là bị báo sai,
+       kẹt luôn ở màn khoá. Giờ đọc ngày từ các cụm số trong câu trả lời:
+         21 · 21/9 · 21-09 · 21.9.2026 · 9/21 · 219 · 2109 · "ngày 21 tháng 9" · "hai mươi mốt"
+       đều được chấp nhận. */
+    const NGAY = 21, THANG = 9;
+
+    function dapAnDung(raw) {
+        const text = String(raw || '');
+        const goc = normalize(text);
+        if (!goc) return false;
+        if (accepted.has(goc)) return true;
+
+        // "hai muoi mot thang chin" / "ngay 21 thang chin"
+        if (/haimuoimot|21/.test(goc) && /(thang)?(chin|9)/.test(goc)) return true;
+
+        const cum = text.match(/\d+/g) || [];
+        if (!cum.length) return false;
+
+        // Bỏ năm (4 chữ số) — 21/9/2026, 21.9.2005…
+        const ngan = cum.filter((g) => g.length <= 2).map(Number);
+
+        if (ngan.length >= 2) {
+            const [a, b] = ngan;
+            // chấp nhận cả ngày/tháng lẫn tháng/ngày cho chắc
+            return (a === NGAY && b === THANG) || (a === THANG && b === NGAY);
+        }
+        if (ngan.length === 1) return ngan[0] === NGAY;   // chỉ gõ "21"
+
+        // Gõ dính liền, không dấu ngăn: 219 / 2109 / 2192026 / 21092026
+        const g = cum[0];
+        return g === '219' || g === '2109'
+            || /^219\d{4}$/.test(g) || /^2109\d{4}$/.test(g);
+    }
+
     function build() {
         const gate = document.createElement('div');
         gate.className = 'gate';
@@ -173,7 +208,7 @@
                 peekMsg.textContent = 'Nhập mật khẩu đã nha 🥺';
                 return;
             }
-            if (accepted.has(pass)) {
+            if (dapAnDung(peekInput.value)) {
                 // Nhớ lại máy này, lần sau vào thẳng khỏi phải nhập nữa
                 safe(() => localStorage.setItem(PREVIEW_KEY, '1'));
                 peekMsg.textContent = 'Đúng rồi, vào xem thôi 🎉';
@@ -183,9 +218,9 @@
                 return;
             }
             peekTries++;
-            peekMsg.textContent = peekTries >= 2
-                ? 'Gợi ý: là ngày sinh nhật đó, kiểu ngày/tháng 🎂'
-                : 'Sai mật khẩu rồi 🥺';
+            peekMsg.textContent = peekTries >= 3
+                ? 'Mật khẩu là 21/9 đó 🎂'
+                : (peekTries >= 2 ? 'Gợi ý: là ngày sinh nhật đó, kiểu ngày/tháng 🎂' : 'Sai mật khẩu rồi 🥺');
             card.classList.remove('shake');
             void card.offsetWidth;
             card.classList.add('shake');
@@ -259,13 +294,15 @@
                 msg.textContent = 'Em nhập câu trả lời đã nha 🥺';
                 return;
             }
-            if (accepted.has(answer)) {
+            if (dapAnDung(input.value)) {
                 msg.textContent = 'Đúng rồi! Mở quà thôi nào 🎉';
                 openGate();
                 return;
             }
             tries++;
-            msg.textContent = tries >= 2 ? HINT : 'Hông đúng rồi, thử lại xem nè 🥺';
+            msg.textContent = tries >= 3
+                ? 'Gõ giúp anh: 21/9 nha 💗'
+                : (tries >= 2 ? HINT : 'Hông đúng rồi, thử lại xem nè 🥺');
             card.classList.remove('shake');
             void card.offsetWidth;
             card.classList.add('shake');
